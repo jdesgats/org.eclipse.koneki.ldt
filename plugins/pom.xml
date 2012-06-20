@@ -12,6 +12,7 @@
   <version>0.0.1-SNAPSHOT</version>
   <packaging>pom</packaging>
   <modules>
+ 	<module>com.cforcoding.jmd</module> 
     <module>com.naef.jnlua</module>
     <module>com.naef.jnlua.linux</module>
     <module>com.naef.jnlua.linux64</module>
