@@ -53,7 +53,7 @@ return[[#
 # end
 #
 # -- get type corresponding to this file (module)
-# local currenttype 
+# local currenttype
 # if not isempty(_file.returns) and _file.returns[1] and not isempty(_file.returns[1].types) then
 #  	local typeref = _file.returns[1].types[1]
 #  	if typeref.tag == "internaltyperef" then 
@@ -76,8 +76,7 @@ return[[#
 # if _file.types then
 #	for name, type in sortedpairs( _file.types ) do
 #		if type ~= currenttype and type.tag == 'recordtypedef' then
-			<a id="$(anchor(type))" />
-			<h2>Type <code>$(name)</code></h2>
+			<h2><a id="$(anchor(type))">Type <code>$(name)</code></a></h2>
 			$( applytemplate(type, 'index') )
 #		end
 #	end
