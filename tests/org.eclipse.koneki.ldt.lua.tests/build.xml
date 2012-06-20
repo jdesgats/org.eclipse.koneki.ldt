@@ -16,6 +16,7 @@
 	<property name="modelsbuilderFolder" value="${librariesFolder}/modelsbuilder/src" />
 	<property name="penlightFolder" value="${librariesFolder}/penlight" />
 	<property name="templateengineFolder" value="${librariesFolder}/templateengine" />
+	<property name="markdownFolder" value="${librariesFolder}/markdown" />
 	<property name="doctemplatesFolder" value="${librariesFolder}/doctemplates" />
 	
 	<!-- destination folder -->
@@ -38,6 +39,9 @@
 		</copy>
 		<copy todir="${destinationLuaFolder}">
 			<fileset dir="${doctemplatesFolder}" includes="**/*.lua"/>
+		</copy>
+		<copy todir="${destinationLuaFolder}">
+			<fileset dir="${markdownFolder}" includes="**/*.lua"/>
 		</copy>
 		<!-- copy metalua file -->
 		<copy todir="${destinationLuaFolder}">
