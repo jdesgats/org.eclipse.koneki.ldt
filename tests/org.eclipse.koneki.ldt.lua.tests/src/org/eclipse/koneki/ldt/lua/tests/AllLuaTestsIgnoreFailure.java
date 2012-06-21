@@ -15,6 +15,7 @@ import junit.framework.TestCase;
 import junit.framework.TestSuite;
 
 import org.eclipse.koneki.ldt.lua.tests.internal.ast.models.api.APIModelTestSuite;
+import org.eclipse.koneki.ldt.lua.tests.internal.ast.models.api.APIModelToHTMLTestSuite;
 import org.eclipse.koneki.ldt.lua.tests.internal.ast.models.internal.InternalModelTestSuite;
 import org.eclipse.koneki.ldt.lua.tests.internal.formatter.FourSpacesFormatterTestSuite;
 import org.eclipse.koneki.ldt.lua.tests.internal.formatter.MixedFormatterTestSuite;
@@ -28,6 +29,7 @@ public class AllLuaTestsIgnoreFailure extends TestCase {
 		final TestSuite suite = new TestSuite(AllLuaTestsIgnoreFailure.class.getName());
 		final boolean ignore = true;
 		suite.addTest(new APIModelTestSuite(ignore));
+		suite.addTest(new APIModelToHTMLTestSuite(ignore));
 		suite.addTest(new TabFormatterTestSuite(ignore));
 		suite.addTest(new FourSpacesFormatterTestSuite(ignore));
 		suite.addTest(new MixedFormatterTestSuite(ignore));
