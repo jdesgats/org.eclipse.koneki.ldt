@@ -64,8 +64,6 @@ function M.test(luasourcepath, referencepath)
 	local status, errormessage = pcall( function()
     	xmlparser:parse(docGenerated)
     end)
-    print (errormessage)
-    print (status)
     if not status then
     	return nil, tostring(errormessage)
     end

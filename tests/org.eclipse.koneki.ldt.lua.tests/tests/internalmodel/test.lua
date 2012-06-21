@@ -11,8 +11,6 @@
 require 'errnode'
 local internalmodelbuilder = require 'models.internalmodelbuilder'
 local tablecompare = require 'tablecompare'
---local function f(...) print(...) io.flush() end
---local print = f
 
 local M = {}
 function M.test(luasourcepath, serializedreferencepath)
