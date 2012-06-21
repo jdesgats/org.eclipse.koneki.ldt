@@ -61,7 +61,15 @@ function M.test(luasourcepath, referencepath)
 	xmlparser.options.errorHandler = errorhandlergen(parsingError)
 
 	-- Parse the HTML in a table
-    xmlparser:parse(docGenerated)
+	local status, errormessage = pcall( function()
+    	xmlparser:parse(docGenerated)
+    end)
+    print (errormessage)
+    print (status)
+    if not status then
+    	return nil, tostring(errormessage)
+    end
+    
     local docGeneratedTable = h.root;
     
 
@@ -79,7 +87,12 @@ function M.test(luasourcepath, referencepath)
 	xmlparser.options.errorHandler = errorhandlergen(referencepath)
 	
 	-- Parse reference in a table
-	xmlparser:parse(referencehtml)
+	local status, errormessage = pcall( function()
+    	xmlparser:parse(referencehtml)
+    end)
+    if not status then
+    	return nil, tostring(errormessage)
+    end
 	local referencetable = h.root;
 
 	-- Check that they are equivalent

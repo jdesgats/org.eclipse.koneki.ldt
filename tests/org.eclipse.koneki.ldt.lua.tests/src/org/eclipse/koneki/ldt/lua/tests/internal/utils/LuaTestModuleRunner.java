@@ -94,6 +94,8 @@ public class LuaTestModuleRunner extends AbstractMetaLuaModule {
 				final String errorMessage = luaState.toString(-1);
 				if (errorMessage != null) {
 					Assert.fail(errorMessage);
+				} else {
+					Assert.fail("No message"); //$NON-NLS-1$
 				}
 			}
 		} finally {
