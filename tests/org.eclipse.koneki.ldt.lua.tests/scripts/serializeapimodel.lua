@@ -13,11 +13,8 @@
 --
 -- Generate serialized lua API models files next to given file.
 --
-require 'errnode'
-local serializer = require 'serpent'
-local apimodelbuilder = require 'models.apimodelbuilder'
-local tablecompare  = require 'tablecompare'
-local tabledumpbeautifier = require 'tabledumpbeautifier'
+local apimodelbuiler = require 'models.apimodelbuilder'
+local modeltransformations = require 'modeltransformations'
 if #arg < 1 then
 	print 'No file to serialize.'
 	return
@@ -26,41 +23,12 @@ for k = 1, #arg do
 
 	-- Load source to serialize
 	local filename = arg[k]
-	local luafile = io.open(filename, 'r')
-	local luasource = luafile:read('*a')
-	luafile:close()
-
-	-- Generate AST
-	local ast, errormessage = getast( luasource )
-	if not ast then
-		print(string.format('Unable to generate AST for %s.\n%s', filename, errormessage))
-	else
-		--Generate API model
-		local apimodel = apimodelbuilder.createmoduleapi(ast)
-
-		-- Strip functions
-		 apimodel = tablecompare.stripfunctions( apimodel )
- 
-		-- Serialize model
-		local serializedcode = serializer.serialize( apimodel )
-		
-		-- Beautify serialized model
-		local beautifulserializedcode, error = tabledumpbeautifier.prettify(serializedcode)
-		if not beautifulserializedcode then
-			print(string.format("Unable to prettify serialized code.\n%s", error))
-			beautifulserializedcode = serializedcode
-		end
-		 
-
-		-- Define file name		
-		local serializedfilename = filename:gsub('([%w%-_/\]+)%.lua','%1.serialized.lua')
-
-		-- Save serialized model
-		local serializefile = io.open(serializedfilename, 'w')
-		serializefile:write( beautifulserializedcode )
-		serializefile:close()
-
-		-- This a success
-		print( string.format('%s serialized to %s.', filename, serializedfilename) )
+	local status, error = modeltransformations.codetoserialisedmodel(
+		filename,
+		'serialized.lua',
+		apimodelbuiler.createmoduleapi
+	)
+	if not status then
+		print( error )
 	end
 end
