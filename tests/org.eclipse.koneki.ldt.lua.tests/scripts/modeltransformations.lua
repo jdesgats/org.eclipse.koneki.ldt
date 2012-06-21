@@ -39,9 +39,9 @@ function M.codetoserialisedmodel(sourcefilepath, resultextension, transformation
 	local model = transformationfunction(ast)
 
 	-- Strip functions
-		 model = tablecompare.stripfunctions( model )
+	model = tablecompare.stripfunctions( model )
  
-		-- Serialize model
+	-- Serialize model
 	local serializedcode = serializer.serialize( model )
 	
 	-- Beautify serialized model
