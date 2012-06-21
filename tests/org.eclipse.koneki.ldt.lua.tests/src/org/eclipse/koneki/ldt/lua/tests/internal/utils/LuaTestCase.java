@@ -59,7 +59,13 @@ public class LuaTestCase extends TestCase {
 			final String message = MessageFormat.format("{0} reference does not exist.", referenceFileAbsolutePath); //$NON-NLS-1$
 			throw new RuntimeException(message);
 		}
-		luaRunner = new LuaTestModuleRunner(moduleName, sourceFileAbsolutePath, referenceFileAbsolutePath, luaPath, filesToCompile());
+
+		luaRunner = createLuaRunner(moduleName, sourceFileAbsolutePath, referenceFileAbsolutePath, luaPath, filesToCompile());
+	}
+
+	protected LuaTestModuleRunner createLuaRunner(String module, String absoluteSourcePath, String asbsoluteReferencePath, List<String> luapath,
+			List<String> files) {
+		return new LuaTestModuleRunner(module, absoluteSourcePath, asbsoluteReferencePath, luapath, files);
 	}
 
 	@Test

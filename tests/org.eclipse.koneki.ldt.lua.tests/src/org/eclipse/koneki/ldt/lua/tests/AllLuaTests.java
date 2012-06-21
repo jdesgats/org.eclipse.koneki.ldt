@@ -20,6 +20,7 @@ import org.eclipse.koneki.ldt.lua.tests.internal.ast.models.internal.InternalMod
 import org.eclipse.koneki.ldt.lua.tests.internal.formatter.FourSpacesFormatterTestSuite;
 import org.eclipse.koneki.ldt.lua.tests.internal.formatter.MixedFormatterTestSuite;
 import org.eclipse.koneki.ldt.lua.tests.internal.formatter.TabFormatterTestSuite;
+import org.eclipse.koneki.ldt.lua.tests.internal.template.engine.JDMTemplateEngineTestSuite;
 import org.eclipse.koneki.ldt.lua.tests.internal.template.engine.TemplateEngineTestSuite;
 
 public class AllLuaTests extends TestCase {
@@ -34,6 +35,7 @@ public class AllLuaTests extends TestCase {
 		suite.addTest(new MixedFormatterTestSuite(ignore));
 		suite.addTest(new InternalModelTestSuite(ignore));
 		suite.addTest(new TemplateEngineTestSuite(ignore));
+		suite.addTest(new JDMTemplateEngineTestSuite(ignore));
 		return suite;
 	}
 }
