@@ -418,7 +418,6 @@ function M.newparser(handler)
         if self.options.expandEntities then
             --for k,v in self._ENTITIES do
             for k,v in pairs(self._ENTITIES) do
-                --print (k, v) 
                 s = string.gsub(s,k,v)
             end
         end

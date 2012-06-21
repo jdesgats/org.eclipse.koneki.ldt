@@ -97,7 +97,6 @@ function M.createhandler()
     obj.text = function(self,t)
     		if (self.current._name ~= "code" and self.current._name ~= "pre") then
     			t = heavytrim(t)
-    			table.print(self.current)
     		end
     		if (t ~= "") then
 	            local node = { _type = "TEXT", 
