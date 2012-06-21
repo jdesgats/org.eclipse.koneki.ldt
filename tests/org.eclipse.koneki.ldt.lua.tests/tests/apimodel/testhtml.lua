@@ -41,26 +41,29 @@ function M.test(luasourcepath, serializedreferencepath)
 	-- Load provided source
 	--
 	local luafile, errormessage = io.open(luasourcepath, 'r')
-	if not luafile then
-		return nil, string.format('Unable to read from %s.\n%s', luasourcepath, errormessage)
-	end
+	assert(
+		luafile,
+		string.format('Unable to read from %s.\n%s', luasourcepath, errormessage or '')
+	)
 	local luasource = luafile:read('*a')
 	luafile:close()
 
 	-- Generate AST
 	local ast, errormessage = getast( luasource )
-	if not ast then
-		return nil, string.format('Unable to generate AST for %s.\n%s', luasourcepath, errormessage)
-	end
+	assert(
+		ast,
+		string.format('Unable to generate AST for %s.\n%s', luasourcepath, errormessage or '')
+	)
 
 	-- Generate API model
 	local apimodel = apimodelbuilder.createmoduleapi(ast)
 	
 	-- Generate html form API Model
 	local htmlcode, errormessage = templateengine.applytemplate(apimodel)
-	if not htmlcode then
-		return nil, string.format('Unable to generate html for %s.\%s', luasourcepath, errormessage)
-	end
+	assert(
+		htmlcode,
+		string.format('Unable to generate html for %s.\%s', luasourcepath, errormessage or '')
+	)
 
 	--
 	-- Generate html table
@@ -75,9 +78,7 @@ function M.test(luasourcepath, serializedreferencepath)
 	
 	-- Actual html parsing
     xmlparser:parse(htmlcode)
-    if #errormessages > 0 then
-    	return nil, table.concat(errormessages)
-    end
+    assert(#errormessages == 0, table.concat(errormessages))
     local htmltable = handler.root
 
 	--
@@ -90,9 +91,7 @@ function M.test(luasourcepath, serializedreferencepath)
 	-- Generate html from reference
 	errormessages = {}
     xmlparser:parse(htmlreferencecode)
-    if #errormessages > 0 then
-    	return nil, table.concat(errormessages)
-    end
+    assert(#errormessages == 0, table.concat(errormessages))
     local htmlreferencetable = handler.root
 	
 

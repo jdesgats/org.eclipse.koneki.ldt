@@ -19,17 +19,19 @@ function M.test(luasourcepath, serializedreferencepath)
 	-- Load provided source
 	--
 	local luafile, errormessage = io.open(luasourcepath, 'r')
-	if not luafile then
-		return nil, string.format('Unable to read from %s.\n%s', luasourcepath, errormessage)
-	end
+	assert(
+		luafile,
+		string.format('Unable to read from %s.\n%s', luasourcepath, errormessage or '')
+	)
 	local luasource = luafile:read('*a')
 	luafile:close()
 
 	-- Generate AST
 	local ast, errormessage = getast( luasource )
-	if not ast then
-		return nil, string.format('Unable to generate AST for %s.\n%s', luasourcepath, errormessage)
-	end
+	assert(
+		ast,
+		string.format('Unable to generate AST for %s.\n%s', luasourcepath, errormessage or '')
+	)
 
 	--
 	-- Generate API model
@@ -41,9 +43,10 @@ function M.test(luasourcepath, serializedreferencepath)
 	-- Load provided reference
 	--
 	local luareferenceloadingfunction = loadfile(serializedreferencepath)
-	if not luareferenceloadingfunction then
-		return nil, string.format('Unable to load reference from %s.', serializedreferencepath)
-	end
+	assert(
+		luareferenceloadingfunction,
+		string.format('Unable to load reference from %s.', serializedreferencepath)
+	)
 	local referenceapimodel = luareferenceloadingfunction()
 
 	-- Check that they are equivalent

@@ -14,7 +14,6 @@ local tablecompare = require 'tablecompare'
 require 'metalua.compiler'
 local domhandler = require 'domhandler'
 local xml = require 'xml'
-local assert = java.require("org.junit.Assert")
 
 local templateengine = require 'templateengine'
 for k, v in pairs(require 'template.utils') do
@@ -25,9 +24,9 @@ local M = {}
 
 local function errorhandlergen(file)
 	return function (err, pos)
-			local str = string.format("Parsing error of %s,line %i: %s",file, pos, err)
-			assert:fail(str)
-		end
+		local str = string.format("Parsing error of %s,line %i: %s",file, pos, err)
+		error(str)
+	end
 end
 
 
@@ -35,17 +34,19 @@ function M.test(luasourcepath, referencepath)
 
 	-- Load provided source
 	local luafile, errormessage = io.open(luasourcepath, 'r')
-	if not luafile then
-		return nil, string.format('Unable to read from %s.\n%s', luasourcepath, errormessage)
-	end
+	assert(
+		luafile,
+		string.format('Unable to read from %s.\n%s', luasourcepath, errormessage or '')
+	)
 	local luasource = luafile:read('*a')
 	luafile:close()
 
 	-- Generate AST
 	local ast, errormessage = getast( luasource )
-	if not ast then
-		return nil, string.format('Unable to generate AST for %s.\n%s', luasourcepath, errormessage)
-	end
+	assert(
+		ast,
+		string.format('Unable to generate AST for %s.\n%s', luasourcepath, errormessage or '')
+	)
 
 	-- Generate API model
 	local apimodel = apimodelbuilder.createmoduleapi(ast)
@@ -53,7 +54,7 @@ function M.test(luasourcepath, referencepath)
 	-- Generate Documentation
 	templateengine.env.markdown = jmdmarkdown
 	local docGenerated = templateengine.applytemplate(apimodel)
-	
+
 	-- Create parser for generated html
 	local h = domhandler.createhandler()
 	local xmlparser = xml.newparser(h)
@@ -63,35 +64,32 @@ function M.test(luasourcepath, referencepath)
 
 	-- Parse the HTML in a table
 	local status, errormessage = pcall( function()
-    	xmlparser:parse(docGenerated)
-    end)
-    if not status then
-    	return nil, tostring(errormessage)
-    end
-    
-    local docGeneratedTable = h.root;
-    
+		xmlparser:parse(docGenerated)
+	end)
+	assert(status, tostring(errormessage))
+
+	local docGeneratedTable = h.root;
+
 
 	-- Load provided reference
 	local referenceFile, errormessage = io.open(referencepath)
-	if not referenceFile then
-		return nil, string.format('Unable to read reference from %s.\n%s', luareferencepath, errormessage)
-	end
+	assert(
+		referenceFile,
+		string.format('Unable to read reference from %s.\n%s', luareferencepath, errormessage)
+	)
 	local referencehtml = referenceFile:read('*a')
 
- 	-- Create reference parser
+	-- Create reference parser
 	h = domhandler.createhandler()
 	xmlparser = xml.newparser(h)
 	xmlparser.options.stripWS = nil
 	xmlparser.options.errorHandler = errorhandlergen(referencepath)
-	
+
 	-- Parse reference in a table
 	local status, errormessage = pcall( function()
-    	xmlparser:parse(referencehtml)
-    end)
-    if not status then
-    	return nil, tostring(errormessage)
-    end
+		xmlparser:parse(referencehtml)
+	end)
+	assert(status, tostring(errormessage))
 	local referencetable = h.root;
 
 	-- Check that they are equivalent
