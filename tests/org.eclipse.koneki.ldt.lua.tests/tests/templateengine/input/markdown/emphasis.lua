@@ -6,9 +6,6 @@
 --Use two asterisks for **strong emphasis**.
 --Or, if you prefer, __use two underscores instead__.
 --
--- @module markdownemphasis
-local string = require 'string'
+-- @module emphasis
 
-local M = {}
-
-return M
+return nil

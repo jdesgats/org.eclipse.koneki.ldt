@@ -7,9 +7,6 @@
 -->
 --> ## This is an H2 in a blockquote
 --
--- @module markdownquote
-local string = require 'string'
+-- @module quote
 
-local M = {}
-
-return M
+return nil

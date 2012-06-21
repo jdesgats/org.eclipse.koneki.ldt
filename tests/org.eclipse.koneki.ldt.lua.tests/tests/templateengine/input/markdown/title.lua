@@ -9,9 +9,6 @@
 --
 --### Header 3
 --
--- @module markdowntitle
-local string = require 'string'
+-- @module title
 
-local M = {}
-
-return M
+return nil
