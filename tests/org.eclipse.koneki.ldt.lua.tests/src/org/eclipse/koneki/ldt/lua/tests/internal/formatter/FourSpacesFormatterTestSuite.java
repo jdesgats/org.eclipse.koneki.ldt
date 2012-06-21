@@ -15,8 +15,8 @@ import org.eclipse.koneki.ldt.lua.tests.internal.utils.AbstractLuaTestSuite;
 
 public class FourSpacesFormatterTestSuite extends AbstractLuaTestSuite {
 
-	public FourSpacesFormatterTestSuite() {
-		super("Formatter 4 spaces", "tests/formatter", "lua"); //$NON-NLS-1$ //$NON-NLS-2$ //$NON-NLS-3$
+	public FourSpacesFormatterTestSuite(boolean ignore) {
+		super("Formatter 4 spaces", "tests/formatter", "lua", ignore); //$NON-NLS-1$ //$NON-NLS-2$ //$NON-NLS-3$
 	}
 
 	/**

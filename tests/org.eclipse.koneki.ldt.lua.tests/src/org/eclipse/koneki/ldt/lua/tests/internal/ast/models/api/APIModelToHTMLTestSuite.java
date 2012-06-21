@@ -14,8 +14,8 @@ import org.eclipse.koneki.ldt.lua.tests.internal.utils.AbstractLuaTestSuite;
 
 public class APIModelToHTMLTestSuite extends AbstractLuaTestSuite {
 
-	public APIModelToHTMLTestSuite() {
-		super("apimodeltohtml", "tests/apimodel", "serialized.lua"); //$NON-NLS-1$ //$NON-NLS-2$ //$NON-NLS-3$
+	public APIModelToHTMLTestSuite(boolean ignore) {
+		super("apimodeltohtml", "tests/apimodel", "serialized.lua", ignore); //$NON-NLS-1$ //$NON-NLS-2$ //$NON-NLS-3$
 	}
 
 	protected String getTestModuleName() {

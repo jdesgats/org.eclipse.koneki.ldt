@@ -31,6 +31,7 @@ import org.osgi.framework.Bundle;
  */
 public abstract class AbstractLuaTestSuite extends TestSuite {
 
+	private static final String IGNORE_FOLDER_NAME = "ignore"; //$NON-NLS-1$
 	private static final String COMMON_LIB_FOLDER = "/lib"; //$NON-NLS-1$
 	private static final String COMMON_EXTERNAL_LIB_FOLDER = "/lib/external"; //$NON-NLS-1$
 
@@ -42,9 +43,10 @@ public abstract class AbstractLuaTestSuite extends TestSuite {
 	 *            The project relative path of the folder containing inputs, references and test files
 	 * @param referenceFileExtension
 	 *            Extension of the reference file (e.g. "lua" or "serialized")
+	 * @param ignore
 	 * 
 	 */
-	public AbstractLuaTestSuite(final String name, final String folderPath, final String referenceFileExtension) {
+	public AbstractLuaTestSuite(final String name, final String folderPath, final String referenceFileExtension, boolean ignore) {
 		super();
 		setName(name);
 
@@ -68,10 +70,20 @@ public abstract class AbstractLuaTestSuite extends TestSuite {
 			// Retrieve files
 			for (final File inputFile : getRecursiveFileList(inputFolder)) {
 
-				// Compute reference file path
+				// Compute relative file path
 				final IPath inputFilePath = new Path(inputFile.getCanonicalPath());
 				final IPath relativeToFolderPath = inputFilePath.makeRelativeTo(new Path(inputFolder.getCanonicalPath()));
-				IPath referenceFilePath = new Path(referenceFolder.getCanonicalPath()).append(relativeToFolderPath);
+
+				// Ignore ignore folder
+				IPath relativeToFolderPathWithoutIgnore;
+				if (relativeToFolderPath.segment(0).equals(IGNORE_FOLDER_NAME)) {
+					relativeToFolderPathWithoutIgnore = relativeToFolderPath.makeRelativeTo(new Path(IGNORE_FOLDER_NAME));
+				} else {
+					relativeToFolderPathWithoutIgnore = relativeToFolderPath;
+				}
+
+				// Build reference file path
+				IPath referenceFilePath = new Path(referenceFolder.getCanonicalPath()).append(relativeToFolderPathWithoutIgnore);
 				referenceFilePath = referenceFilePath.removeFileExtension();
 				referenceFilePath = referenceFilePath.addFileExtension(referenceFileExtension);
 
@@ -81,8 +93,13 @@ public abstract class AbstractLuaTestSuite extends TestSuite {
 				path.add(COMMON_EXTERNAL_LIB_FOLDER);
 				path.add(folderPath);
 
+				// Compute testName
+				String testName = MessageFormat.format("{0}#{1}", getName(), relativeToFolderPath.toOSString()); //$NON-NLS-1$
+
 				// Append test case
-				addTest(createTestCase(getTestModuleName(), inputFilePath, referenceFilePath, path));
+				if (!(ignore && relativeToFolderPath.segment(0).equals(IGNORE_FOLDER_NAME))) {
+					addTest(createTestCase(testName, getTestModuleName(), inputFilePath, referenceFilePath, path));
+				}
 			}
 		} catch (final IOException e) {
 			final String message = MessageFormat.format("Unable to locate {0}.", folderPath); //$NON-NLS-1$
@@ -143,7 +160,8 @@ public abstract class AbstractLuaTestSuite extends TestSuite {
 		throw new RuntimeException(message, t);
 	}
 
-	protected TestCase createTestCase(final String testModuleName, final IPath inputFilePath, final IPath referenceFilePath, final List<String> path) {
-		return new LuaTestCase(getName(), testModuleName, inputFilePath, referenceFilePath, path);
+	protected TestCase createTestCase(final String testName, final String testModuleName, final IPath inputFilePath, final IPath referenceFilePath,
+			final List<String> path) {
+		return new LuaTestCase(testName, testModuleName, inputFilePath, referenceFilePath, path);
 	}
 }

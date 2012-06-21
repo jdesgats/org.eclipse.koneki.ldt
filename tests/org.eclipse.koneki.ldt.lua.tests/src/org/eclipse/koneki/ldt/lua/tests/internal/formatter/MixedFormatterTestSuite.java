@@ -15,8 +15,8 @@ import org.eclipse.koneki.ldt.lua.tests.internal.utils.AbstractLuaTestSuite;
 
 public class MixedFormatterTestSuite extends AbstractLuaTestSuite {
 
-	public MixedFormatterTestSuite() {
-		super("Formatter mixed", "tests/formatter", "lua"); //$NON-NLS-1$ //$NON-NLS-2$ //$NON-NLS-3$
+	public MixedFormatterTestSuite(boolean ignore) {
+		super("Formatter mixed", "tests/formatter", "lua", ignore); //$NON-NLS-1$ //$NON-NLS-2$ //$NON-NLS-3$
 	}
 
 	/**

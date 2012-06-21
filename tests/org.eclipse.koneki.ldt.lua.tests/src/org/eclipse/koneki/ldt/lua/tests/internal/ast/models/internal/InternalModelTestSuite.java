@@ -20,12 +20,12 @@ import org.eclipse.koneki.ldt.lua.tests.internal.utils.ModelTestCase;
 
 public class InternalModelTestSuite extends AbstractLuaTestSuite {
 
-	public InternalModelTestSuite() {
-		super("internalmodel", "tests/internalmodel", "serialized.lua"); //$NON-NLS-1$ //$NON-NLS-2$ //$NON-NLS-3$
+	public InternalModelTestSuite(boolean ignore) {
+		super("internalmodel", "tests/internalmodel", "serialized.lua", ignore); //$NON-NLS-1$ //$NON-NLS-2$ //$NON-NLS-3$
 	}
 
 	@Override
-	protected TestCase createTestCase(final String testModuleName, final IPath source, final IPath ref, final List<String> path) {
-		return new ModelTestCase(getName(), testModuleName, source, ref, path);
+	protected TestCase createTestCase(final String testName, final String testModuleName, final IPath source, final IPath ref, final List<String> path) {
+		return new ModelTestCase(testName, testModuleName, source, ref, path);
 	}
 }

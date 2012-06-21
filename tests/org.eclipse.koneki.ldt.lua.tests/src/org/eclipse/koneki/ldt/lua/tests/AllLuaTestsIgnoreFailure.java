@@ -21,11 +21,11 @@ import org.eclipse.koneki.ldt.lua.tests.internal.formatter.MixedFormatterTestSui
 import org.eclipse.koneki.ldt.lua.tests.internal.formatter.TabFormatterTestSuite;
 import org.eclipse.koneki.ldt.lua.tests.internal.template.engine.TemplateEngineTestSuite;
 
-public class AllLuaTests extends TestCase {
+public class AllLuaTestsIgnoreFailure extends TestCase {
 
 	public static Test suite() {
-		final TestSuite suite = new TestSuite(AllLuaTests.class.getName());
-		final boolean ignore = false;
+		final TestSuite suite = new TestSuite(AllLuaTestsIgnoreFailure.class.getName());
+		final boolean ignore = true;
 		suite.addTest(new APIModelTestSuite(ignore));
 		suite.addTest(new TabFormatterTestSuite(ignore));
 		suite.addTest(new FourSpacesFormatterTestSuite(ignore));

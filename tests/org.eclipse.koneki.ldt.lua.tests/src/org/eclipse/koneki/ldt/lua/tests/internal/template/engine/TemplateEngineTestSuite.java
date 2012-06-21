@@ -18,8 +18,8 @@ import org.eclipse.koneki.ldt.lua.tests.internal.utils.AbstractLuaTestSuite;
  */
 public class TemplateEngineTestSuite extends AbstractLuaTestSuite {
 
-	public TemplateEngineTestSuite() {
-		super("Template Engine", "tests/templateengine/", "html"); //$NON-NLS-1$ //$NON-NLS-2$ //$NON-NLS-3$
+	public TemplateEngineTestSuite(boolean ignore) {
+		super("Template Engine", "tests/templateengine/", "html", ignore); //$NON-NLS-1$ //$NON-NLS-2$ //$NON-NLS-3$
 	}
 
 }

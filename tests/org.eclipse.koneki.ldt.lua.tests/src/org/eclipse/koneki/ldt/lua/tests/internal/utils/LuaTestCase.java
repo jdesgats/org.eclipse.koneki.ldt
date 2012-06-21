@@ -36,15 +36,13 @@ public class LuaTestCase extends TestCase {
 	/** Actual test is performed by this object */
 	private LuaTestModuleRunner luaRunner;
 
-	public LuaTestCase(final String testSuiteName, final String testModuleName, final IPath inputFilePath, final IPath referenceFilePath,
+	public LuaTestCase(final String testName, final String testModuleName, final IPath inputFilePath, final IPath referenceFilePath,
 			final List<String> directoryListForLuaPath) {
 		moduleName = testModuleName;
 		sourceFileAbsolutePath = inputFilePath.toOSString();
 		referenceFileAbsolutePath = referenceFilePath.toOSString();
 		luaPath = directoryListForLuaPath;
 
-		// The Module name is
-		String testName = MessageFormat.format("{0}.{1}", testSuiteName, inputFilePath.lastSegment()); //$NON-NLS-1$
 		setName(testName);
 	}
 
