@@ -8,19 +8,18 @@
  * Contributors:
  *     Sierra Wireless - initial API and implementation
  *******************************************************************************/
-package org.eclipse.koneki.ldt.lua.tests.internal.ast.models.api;
+package org.eclipse.koneki.ldt.lua.tests.internal.utils;
 
 import java.util.ArrayList;
 import java.util.List;
 
 import org.eclipse.core.runtime.IPath;
-import org.eclipse.koneki.ldt.lua.tests.internal.utils.LuaTestCase;
 
-public class APIModelTestCase extends LuaTestCase {
+public class ModelTestCase extends LuaTestCase {
 
 	private static ArrayList<String> filesToCompileList = null;
 
-	public APIModelTestCase(final String testSuiteName, final String testFileName, final IPath sourceFilePath, final IPath referenceFilePath,
+	public ModelTestCase(final String testSuiteName, final String testFileName, final IPath sourceFilePath, final IPath referenceFilePath,
 			final List<String> directoryListForLuaPath) {
 		super(testSuiteName, testFileName, sourceFilePath, referenceFilePath, directoryListForLuaPath);
 	}
