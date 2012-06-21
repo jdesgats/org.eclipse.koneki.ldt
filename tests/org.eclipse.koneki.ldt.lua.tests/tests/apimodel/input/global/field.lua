@@ -1,5 +1,7 @@
+--- @module mod
+
 ---
 -- Field short description
 -- Field long description
--- @field[parent = #global] fieldname
+-- @field[parent = #mod] fieldname
 return nil
