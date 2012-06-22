@@ -1,4 +1,4 @@
 function test()
-    test()
-    -- my comment
+   test()
+   -- my comment
 end

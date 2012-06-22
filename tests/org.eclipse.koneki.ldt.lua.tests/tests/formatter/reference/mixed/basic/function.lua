@@ -2,6 +2,6 @@
 -- function to process
 --
 function foo()
-	   print "foo"
+   print "foo"
 end
 return nil

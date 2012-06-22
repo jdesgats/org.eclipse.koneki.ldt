@@ -6,9 +6,9 @@ local string = require "string"
 function foo()
    while true do
 	  if true then
-	  local table = {
-		 'a',
-		 'b',
+		 local table = {
+			'a',
+			'b',
 			{
 			   'un',
 			   'deux'
