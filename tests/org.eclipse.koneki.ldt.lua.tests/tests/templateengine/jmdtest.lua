@@ -75,7 +75,7 @@ function M.test(luasourcepath, referencepath)
 	local referenceFile, errormessage = io.open(referencepath)
 	assert(
 		referenceFile,
-		string.format('Unable to read reference from %s.\n%s', luareferencepath, errormessage)
+		string.format('Unable to read reference from %s.\n%s', referencepath, errormessage or '')
 	)
 	local referencehtml = referenceFile:read('*a')
 
