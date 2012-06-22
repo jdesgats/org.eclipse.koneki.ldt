@@ -1,10 +1,7 @@
 ---
--- Module to process
+-- Module to process.
 --
--- I strongly recommend against using any `<blink>` tags.
---
--- I wish SmartyPants used named entities like `&mdash;`
--- instead of decimal-encoded entites like `&#8212;`.
+-- Some code with special char to be escaped `&#8;`.
 --
 -- @module code
 

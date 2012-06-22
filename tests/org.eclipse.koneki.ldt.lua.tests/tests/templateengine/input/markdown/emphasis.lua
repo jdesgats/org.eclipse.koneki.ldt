@@ -1,10 +1,7 @@
 ---
--- Module to process
---Some of these words *are emphasized*.
---Some of these words _are emphasized also_.
+-- Module to process.
 --
---Use two asterisks for **strong emphasis**.
---Or, if you prefer, __use two underscores instead__.
+-- *emphasis* or _emphasis_
 --
 -- @module emphasis
 

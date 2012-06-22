@@ -1,13 +1,13 @@
 ---
--- Module to process
+-- Module to process.
 --
---A First Level Header
+-- Header level 1
 --====================
 --
---A Second Level Header
+-- Header level 2
 -----------------------
 --
---### Header 3
+-- ### Header level 3
 --
 -- @module title
 

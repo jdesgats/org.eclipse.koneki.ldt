@@ -1,9 +1,9 @@
 ---
--- Module to process
+-- Module to process.
 --
--- * point 1
--- * two
--- * 3
+-- * apple
+-- * banana
+--     * orange
 --
 -- @module list
 

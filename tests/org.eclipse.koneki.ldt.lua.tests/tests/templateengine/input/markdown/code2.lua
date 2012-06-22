@@ -1,9 +1,8 @@
 ---
--- Module to process
+-- Module to process.
 --
---	<blockquote>
---		<p>For example.</p>
---	</blockquote>
+--	<p>Some code here</p>
+--		With indentation
 --
 -- @module code2
 
