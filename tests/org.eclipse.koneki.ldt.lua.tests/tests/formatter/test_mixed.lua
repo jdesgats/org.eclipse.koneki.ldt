@@ -16,7 +16,7 @@ function M.test(luainputpath, luareferencepath)
 	luafile:close()
 
 	-- format code
-	local formattedCode = formatter.indentCode(luasource, '\n', 3, 4, 0, true)
+	local formattedCode = formatter.indentcode(luasource, '\n', true, 4, 3)
 	assert(
 		formattedCode,
 		string.format('Unable to format %s.\n', luainputpath)
