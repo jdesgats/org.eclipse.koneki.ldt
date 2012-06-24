@@ -9,6 +9,10 @@
 -- Contributors:
 --     Sierra Wireless - initial API and implementation
 -------------------------------------------------------------------------------
+
+-- Fetch libraries form current plugin
+package.path = '../lib/?.lua;../lib/external/?.lua;../lib/external/?.luac;' .. package.path
+
 local apimodelbuilder      = require 'models.apimodelbuilder'
 local modeltransformations = require 'modeltransformations'
 local templateengine       = require 'templateengine'

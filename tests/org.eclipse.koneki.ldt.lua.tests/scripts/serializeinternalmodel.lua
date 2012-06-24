@@ -10,6 +10,9 @@
 --     Sierra Wireless - initial API and implementation
 -------------------------------------------------------------------------------
 
+-- Fetch libraries form same plugin
+package.path = '../lib/?.lua;../lib/external/?.lua;../lib/external/?.luac;' .. package.path
+
 --
 -- Generate serialized lua Internal models files next to given file.
 --

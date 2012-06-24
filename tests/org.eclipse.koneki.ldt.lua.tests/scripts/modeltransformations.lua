@@ -25,7 +25,10 @@ local M = {}
 function M.codetoserialisedmodel(sourcefilepath, resultextension, transformationfunction)
 
 	-- Load file
-	local luafile = io.open(sourcefilepath, 'r')
+	local luafile, errormessage = io.open(sourcefilepath, 'r')
+	if not luafile then
+		return nil, errormessage
+	end
 	local luasource = luafile:read('*a')
 	luafile:close()
 
