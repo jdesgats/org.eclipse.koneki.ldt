@@ -1,8 +1,8 @@
-	do local _ = {
+do local _ = {
 		unknownglobalvars = {
 
 		}
-		--[[table: 0x9e1dd48]],
+		--[[table: 0x8fd2ff8]],
 		content = {
 			localvars = {
 				{
@@ -12,63 +12,63 @@
 						occurrences = {
 							{
 								sourcerange = {
-									min = 6,
-									max = 6
+									min = 7,
+									max = 7
 								}
-								--[[table: 0xa0acc78]],
+								--[[table: 0x8f7a158]],
 								definition = nil --[[ref]],
 								tag = "MIdentifier"
 							}
-							--[[table: 0x9b32fd0]],
+							--[[table: 0x8f7a0f0]],
 							{
 								sourcerange = {
-									min = 8,
-									max = 8
+									min = 9,
+									max = 9
 								}
-								--[[table: 0x9d110c8]],
+								--[[table: 0x8fe70e8]],
 								definition = nil --[[ref]],
 								tag = "MIdentifier"
 							}
-							--[[table: 0x9c63d80]]
+							--[[table: 0x9061628]]
 						}
-						--[[table: 0x9e36c20]],
+						--[[table: 0x8f886d8]],
 						sourcerange = {
-							min = 6,
-							max = 6
+							min = 7,
+							max = 7
 						}
-						--[[table: 0xa07f558]],
+						--[[table: 0x8f88700]],
 						description = "",
 						tag = "item"
 					}
-					--[[table: 0x9e369e8]],
+					--[[table: 0x900e980]],
 					scope = {
 						min = 0,
 						max = 0
 					}
-					--[[table: 0xa2c2a40]]
+					--[[table: 0x900ea48]]
 				}
-				--[[table: 0xa1e64b8]]
+				--[[table: 0x900ea20]]
 			}
-			--[[table: 0xa1be348]],
+			--[[table: 0x8fd30e8]],
 			sourcerange = {
-				min = 0,
+				min = 1,
 				max = 10000
 			}
-			--[[table: 0x9d78a28]],
+			--[[table: 0x8fd3110]],
 			content = {
 				nil --[[ref]],
 				nil --[[ref]]
 			}
-			--[[table: 0x9c97800]],
+			--[[table: 0x8fd30c0]],
 			tag = "MBlock"
 		}
-		--[[table: 0xa2245e8]],
+		--[[table: 0x8fd3020]],
 		tag = "MInternalContent"
 	}
-	--[[table: 0x9d607f0]];
+	--[[table: 0x9094510]];
 	_.content.localvars[1].item.occurrences[1].definition = _.content.localvars[1].item;
 	_.content.localvars[1].item.occurrences[2].definition = _.content.localvars[1].item;
 	_.content.content[1] = _.content.localvars[1].item.occurrences[1];
 	_.content.content[2] = _.content.localvars[1].item.occurrences[2];
 	return _;
-	end
+end

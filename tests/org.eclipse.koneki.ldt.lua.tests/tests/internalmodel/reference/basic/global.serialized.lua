@@ -1,4 +1,4 @@
-	do local _ = {
+do local _ = {
 		unknownglobalvars = {
 			{
 				name = "d",
@@ -7,47 +7,47 @@
 				occurrences = {
 					{
 						sourcerange = {
-							min = 0,
-							max = 0
+							min = 1,
+							max = 1
 						}
-						--[[table: 0xa05a658]],
+						--[[table: 0x8f40090]],
 						definition = nil --[[ref]],
 						tag = "MIdentifier"
 					}
-					--[[table: 0xa05a630]]
+					--[[table: 0x90393e0]]
 				}
-				--[[table: 0xa05b5b8]],
+				--[[table: 0x8ef8d68]],
 				sourcerange = {
-					min = 0,
-					max = 0
+					min = 1,
+					max = 1
 				}
-				--[[table: 0xa05b5e0]],
+				--[[table: 0x8ef8d90]],
 				tag = "item"
 			}
-			--[[table: 0xa05b4a8]]
+			--[[table: 0x8ef8d40]]
 		}
-		--[[table: 0xa059cd8]],
+		--[[table: 0x8f09238]],
 		content = {
 			localvars = {
 
 			}
-			--[[table: 0xa059dc8]],
+			--[[table: 0x906f2d0]],
 			sourcerange = {
-				min = 0,
+				min = 1,
 				max = 10000
 			}
-			--[[table: 0xa059df0]],
+			--[[table: 0x906f2f8]],
 			content = {
 				nil --[[ref]]
 			}
-			--[[table: 0xa059da0]],
+			--[[table: 0x906f2a8]],
 			tag = "MBlock"
 		}
-		--[[table: 0xa059d00]],
+		--[[table: 0x8f09260]],
 		tag = "MInternalContent"
 	}
-	--[[table: 0xa059c38]];
+	--[[table: 0x8f09198]];
 	_.unknownglobalvars[1].occurrences[1].definition = _.unknownglobalvars[1];
 	_.content.content[1] = _.unknownglobalvars[1].occurrences[1];
 	return _;
-	end
+end

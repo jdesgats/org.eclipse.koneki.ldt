@@ -1,3 +1,3 @@
-for var in list do
+for var in lists do
 
 end

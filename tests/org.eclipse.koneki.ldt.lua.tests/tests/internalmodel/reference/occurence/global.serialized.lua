@@ -1,4 +1,4 @@
-	do local _ = {
+do local _ = {
 		unknownglobalvars = {
 			{
 				name = "d",
@@ -7,60 +7,60 @@
 				occurrences = {
 					{
 						sourcerange = {
-							min = 0,
-							max = 0
+							min = 1,
+							max = 1
 						}
-						--[[table: 0xa275ff8]],
+						--[[table: 0x8f62d50]],
 						definition = nil --[[ref]],
 						tag = "MIdentifier"
 					}
-					--[[table: 0xa326a28]],
+					--[[table: 0x8f62ce8]],
 					{
 						sourcerange = {
-							min = 8,
-							max = 8
+							min = 9,
+							max = 9
 						}
-						--[[table: 0xa0bc768]],
+						--[[table: 0x9003680]],
 						definition = nil --[[ref]],
 						tag = "MIdentifier"
 					}
-					--[[table: 0xa0bc700]]
+					--[[table: 0x9003618]]
 				}
-				--[[table: 0xa18d428]],
+				--[[table: 0x9004518]],
 				sourcerange = {
-					min = 0,
-					max = 0
+					min = 1,
+					max = 1
 				}
-				--[[table: 0xa18d450]],
+				--[[table: 0x9004540]],
 				tag = "item"
 			}
-			--[[table: 0xa1c26c8]]
+			--[[table: 0x9019770]]
 		}
-		--[[table: 0xa3240e8]],
+		--[[table: 0x8fd1648]],
 		content = {
 			localvars = {
 
 			}
-			--[[table: 0xa323040]],
+			--[[table: 0x8fd1738]],
 			sourcerange = {
-				min = 0,
+				min = 1,
 				max = 10000
 			}
-			--[[table: 0xa3257e0]],
+			--[[table: 0x8fd1760]],
 			content = {
 				nil --[[ref]],
 				nil --[[ref]]
 			}
-			--[[table: 0xa323e18]],
+			--[[table: 0x8fd1710]],
 			tag = "MBlock"
 		}
-		--[[table: 0xa324110]],
+		--[[table: 0x8fd1670]],
 		tag = "MInternalContent"
 	}
-	--[[table: 0xa323df0]];
+	--[[table: 0x8fd15a8]];
 	_.unknownglobalvars[1].occurrences[1].definition = _.unknownglobalvars[1];
 	_.unknownglobalvars[1].occurrences[2].definition = _.unknownglobalvars[1];
 	_.content.content[1] = _.unknownglobalvars[1].occurrences[1];
 	_.content.content[2] = _.unknownglobalvars[1].occurrences[2];
 	return _;
-	end
+end

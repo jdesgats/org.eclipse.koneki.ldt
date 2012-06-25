@@ -1,4 +1,4 @@
-	do local _ = {
+do local _ = {
 		unknownglobalvars = {
 			{
 				name = "f",
@@ -7,36 +7,36 @@
 				occurrences = {
 					{
 						sourcerange = {
-							min = 9,
-							max = 9
+							min = 10,
+							max = 10
 						}
-						--[[table: 0x9fd1040]],
+						--[[table: 0x8faa8f8]],
 						definition = nil --[[ref]],
 						tag = "MIdentifier"
 					}
-					--[[table: 0x9d2b9a0]]
+					--[[table: 0x8fedf38]]
 				}
-				--[[table: 0x9da0c80]],
+				--[[table: 0x8fb88d0]],
 				sourcerange = {
-					min = 9,
-					max = 9
+					min = 10,
+					max = 10
 				}
-				--[[table: 0x9d10290]],
+				--[[table: 0x8fb88f8]],
 				tag = "item"
 			}
-			--[[table: 0xa2950d0]]
+			--[[table: 0x8fb87c0]]
 		}
-		--[[table: 0xa1fdec8]],
+		--[[table: 0x90be4a0]],
 		content = {
 			localvars = {
 
 			}
-			--[[table: 0xa155b80]],
+			--[[table: 0x90be590]],
 			sourcerange = {
-				min = 0,
+				min = 1,
 				max = 10000
 			}
-			--[[table: 0x9d18248]],
+			--[[table: 0x90be5b8]],
 			content = {
 				nil --[[ref]],
 				{
@@ -48,65 +48,65 @@
 								occurrences = {
 									{
 										sourcerange = {
-											min = 12,
-											max = 16
+											min = 13,
+											max = 17
 										}
-										--[[table: 0x9c638a8]],
+										--[[table: 0x8fd6830]],
 										definition = nil --[[ref]],
 										tag = "MIdentifier"
 									}
-									--[[table: 0x9df9520]],
+									--[[table: 0x8fce280]],
 									{
 										sourcerange = {
-											min = 29,
-											max = 33
+											min = 30,
+											max = 34
 										}
-										--[[table: 0x9b1f948]],
+										--[[table: 0x8f507e8]],
 										definition = nil --[[ref]],
 										tag = "MIdentifier"
 									}
-									--[[table: 0x9aee138]]
+									--[[table: 0x8f507c0]]
 								}
-								--[[table: 0x9b5f380]],
+								--[[table: 0x8f8ebd8]],
 								sourcerange = {
-									min = 12,
-									max = 16
+									min = 13,
+									max = 17
 								}
-								--[[table: 0x9bdd088]],
+								--[[table: 0x8f8ec00]],
 								description = "",
 								tag = "item"
 							}
-							--[[table: 0x9b5f358]],
+							--[[table: 0x8f8eac8]],
 							scope = {
 								min = 0,
 								max = 0
 							}
-							--[[table: 0xa2950a8]]
+							--[[table: 0x8fb8798]]
 						}
-						--[[table: 0x9bdd0f0]]
+						--[[table: 0x8f8ed78]]
 					}
-					--[[table: 0xa1ceee0]],
+					--[[table: 0x8f55330]],
 					sourcerange = {
-						min = 11,
+						min = 12,
 						max = 39
 					}
-					--[[table: 0xa075710]],
+					--[[table: 0x8f55358]],
 					content = {
 						nil --[[ref]],
 						nil --[[ref]]
 					}
-					--[[table: 0x9a29230]],
+					--[[table: 0x8f55308]],
 					tag = "MBlock"
 				}
-				--[[table: 0xa090cc0]]
+				--[[table: 0x8f55268]]
 			}
-			--[[table: 0x9b1c8c8]],
+			--[[table: 0x90be568]],
 			tag = "MBlock"
 		}
-		--[[table: 0xa155b58]],
+		--[[table: 0x90be4c8]],
 		tag = "MInternalContent"
 	}
-	--[[table: 0xa1fde30]];
+	--[[table: 0x902a598]];
 	_.unknownglobalvars[1].occurrences[1].definition = _.unknownglobalvars[1];
 	_.content.content[1] = _.unknownglobalvars[1].occurrences[1];
 	_.content.content[2].localvars[1].item.occurrences[1].definition = _.content.content[2].localvars[1].item;
@@ -114,4 +114,4 @@
 	_.content.content[2].content[1] = _.content.content[2].localvars[1].item.occurrences[1];
 	_.content.content[2].content[2] = _.content.content[2].localvars[1].item.occurrences[2];
 	return _;
-	end
+end
