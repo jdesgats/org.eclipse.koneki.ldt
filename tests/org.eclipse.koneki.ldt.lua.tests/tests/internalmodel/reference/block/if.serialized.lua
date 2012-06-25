@@ -21,7 +21,7 @@ do local _ = {
 					--[[table: 0x8eadc00]],
 					sourcerange = {
 						min = 12,
-						max = 18
+						max = 17
 					}
 					--[[table: 0x8eadc28]],
 					content = {
