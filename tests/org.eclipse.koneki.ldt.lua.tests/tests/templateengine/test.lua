@@ -21,11 +21,17 @@ end
 
 local M = {}
 
-local function errorhandlergen(file)
-	return function (err, pos)
-		local str = string.format("Parsing error of %s,line %i: %s",file, pos, err)
-		error(str)
-	end
+local errorhandling = function (filename)
+	local errorbuffer = {}
+	return function (err, offset)
+		local message = string.format(
+			"An error occured while generating html for %s at offset %d.\n%s",
+			filename,
+			offset,
+			err
+		)
+		table.insert(errorbuffer, message)
+	end, errorbuffer
 end
 
 
@@ -57,13 +63,14 @@ function M.test(luasourcepath, referencepath)
 	local xmlparser = xml.newparser(h)
 	xmlparser.options.stripWS = nil
 	local parsingError = string.format("generated HTML file:\n%s\n", docGenerated)
-	xmlparser.options.errorHandler = errorhandlergen(parsingError)
+	local errorhandlingfunction, errormessages = errorhandling(luasourcepath)
+	xmlparser.options.errorHandler = errorhandlingfunction
 
 	-- Parse the HTML in a table
-	local status, errormessage = pcall( function()
+	local status, pcallerror = pcall( function()
 		xmlparser:parse(docGenerated)
 	end)
-	assert(status, tostring(errormessage))
+	assert(#errormessages == 0 and status , string.format("%s\n%s",table.concat(errormessages), tostring(pcallerror)))
 
 	local docGeneratedTable = h.root;
 
@@ -80,13 +87,14 @@ function M.test(luasourcepath, referencepath)
 	h = domhandler.createhandler()
 	xmlparser = xml.newparser(h)
 	xmlparser.options.stripWS = nil
-	xmlparser.options.errorHandler = errorhandlergen(referencepath)
+	errorhandlingfunction, errormessages = errorhandling(referencepath)
+	xmlparser.options.errorHandler = errorhandlingfunction
 
 	-- Parse reference in a table
-	local status, errormessage = pcall( function()
+	local status, pcallerror = pcall( function()
 		xmlparser:parse(referencehtml)
 	end)
-	assert(status, tostring(errormessage))
+	assert(#errormessages == 0, string.format("%s\n%s",table.concat(errormessages), tostring(pcallerror)))
 	local referencetable = h.root;
 
 	-- Check that they are equivalent

@@ -21,11 +21,19 @@ import org.eclipse.koneki.ldt.lua.tests.internal.utils.ModelTestCase;
 public class APIModelTestSuite extends AbstractLuaTestSuite {
 
 	public APIModelTestSuite(boolean ignore) {
-		super("apimodel", "tests/apimodel", "serialized.lua", ignore); //$NON-NLS-1$ //$NON-NLS-2$ //$NON-NLS-3$
+		super("apimodel", "tests/apimodel", "serialized", ignore); //$NON-NLS-1$ //$NON-NLS-2$ //$NON-NLS-3$
 	}
 
 	@Override
 	protected TestCase createTestCase(final String testName, final String testModuleName, final IPath source, final IPath ref, final List<String> path) {
 		return new ModelTestCase(testName, testModuleName, source, ref, path);
+	}
+
+	protected String getInputFolderPath() {
+		return "lua"; //$NON-NLS-1$
+	}
+
+	protected String getReferenceFolderPath() {
+		return "model"; //$NON-NLS-1$
 	}
 }

@@ -23,6 +23,7 @@ for key, value in pairs(require 'template.utils') do
 end
 
 local M = {}
+
 local errorhandling = function (filename)
 	local errorbuffer = {}
 	return function (err, offset)
@@ -35,70 +36,67 @@ local errorhandling = function (filename)
 		table.insert(errorbuffer, message)
 	end, errorbuffer
 end
-function M.test(luasourcepath, serializedreferencepath)
+
+function M.test(modelsourcepath, serializedreferencepath)
 
 	--
-	-- Load provided source
+	-- Load provided model
 	--
-	local luafile, errormessage = io.open(luasourcepath, 'r')
+	local luafile, errormessage = io.open(modelsourcepath, 'r')
 	assert(
 		luafile,
-		string.format('Unable to read from %s.\n%s', luasourcepath, errormessage or '')
+		string.format('Unable to read from %s.\n%s', modelsourcepath, errormessage or '')
 	)
-	local luasource = luafile:read('*a')
+	local inputstring = luafile:read('*a')
 	luafile:close()
-
-	-- Generate AST
-	local ast, errormessage = getast( luasource )
-	assert(
-		ast,
-		string.format('Unable to generate AST for %s.\n%s', luasourcepath, errormessage or '')
-	)
-
-	-- Generate API model
-	local apimodel = apimodelbuilder.createmoduleapi(ast)
 	
-	-- Generate html form API Model
-	local htmlcode, errormessage = templateengine.applytemplate(apimodel)
-	assert(
-		htmlcode,
-		string.format('Unable to generate html for %s.\%s', luasourcepath, errormessage or '')
-	)
+	-- Load model
+	local modelfunction = loadstring(inputstring)
+	local inputmodel = modelfunction()
 
-	--
-	-- Generate html table
-	--
+	-- Generate html
+	local inputhtml = templateengine.applytemplate(inputmodel)
 	
-	-- Create parser for generated html
+	-- Create parser for input html
 	local handler = domhandler.createhandler()
 	local xmlparser = xml.newparser(handler)
 	xmlparser.options.stripWS = false
-	local errorhandlingfunction, errormessages = errorhandling(luasourcepath)
+	local errorhandlingfunction, errormessages = errorhandling(modelsourcepath)
 	xmlparser.options.errorHandler = errorhandlingfunction
 	
 	-- Actual html parsing
-    xmlparser:parse(htmlcode)
-    assert(#errormessages == 0, table.concat(errormessages))
+	local status, pcallerror = pcall( function() 
+    	xmlparser:parse(inputhtml)
+    end)
+    assert(#errormessages == 0 and status, string.format("%s\n%s",table.concat(errormessages), tostring(pcallerror)))
     local htmltable = handler.root
 
 	--
 	-- Load provided reference
 	--
 	local reffile = io.open(serializedreferencepath, 'r')
-	htmlreferencecode = reffile:read(('*a'))
+	local htmlreference = reffile:read(('*a'))
 	reffile:close()
+	
+	-- Create parser for generated html
+	handler = domhandler.createhandler()
+	xmlparser = xml.newparser(handler)
+	xmlparser.options.stripWS = false
+	errorhandlingfunction, errormessages = errorhandling(modelsourcepath)
+	xmlparser.options.errorHandler = errorhandlingfunction
 	
 	-- Generate html from reference
 	errormessages = {}
-    xmlparser:parse(htmlreferencecode)
-    assert(#errormessages == 0, table.concat(errormessages))
+	local status, pcallerror = pcall( function() 
+    	xmlparser:parse(htmlreference)
+    end)
+    assert(#errormessages == 0 and status, string.format("%s\n%s",table.concat(errormessages), tostring(pcallerror)))
     local htmlreferencetable = handler.root
-	
 
 	-- Check that they are equivalent
 	local equivalent = tablecompare.compare(htmltable, htmlreferencetable)
 	if #equivalent > 0 then
-
+	
 		-- Compute which keys differs
 		local differentkeys = tablecompare.diff(htmltable, htmlreferencetable)
 		local differentkeysstring = table.tostring(differentkeys)
@@ -106,11 +104,11 @@ function M.test(luasourcepath, serializedreferencepath)
 		-- Formalise first table output
 		local _ = '_'
 		local line = _:rep(80)
-		local firstout   = string.format('%s\nFirst table\n%s\n%s', line, line, table.tostring(htmltable, 1))
-		local secondout  = string.format('%s\nSecond table\n%s\n%s', line, line, table.tostring(htmlreferencetable, 1))
-		return nil, string.format('Keys which differ are:\n%s\n%s\n%s', differentkeysstring, firstout, secondout)
-
-	end
+		local firstout   = string.format('%s\nGenerated HTML\n%s\n%s', line, line, inputhtml)
+		local secondout  = string.format('%s\nReference HTML\n%s\n%s', line, line, htmlreference)
+		local firsthtml   = string.format('%s\nGenerated table\n%s\n%s', line, line, table.tostring(htmltable, 1))
+		local secondhtml  = string.format('%s\nReference table\n%s\n%s', line, line, table.tostring(htmlreferencetable, 1))
+		return nil, string.format('Keys which differ are:\n%s\n%s\n%s\n%s\n%s', differentkeysstring, firstout, secondout, firsthtml, secondhtml)	end
 	return true
 end
 return M

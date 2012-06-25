@@ -22,6 +22,10 @@ public class APIModelToHTMLTestSuite extends AbstractLuaTestSuite {
 		return "testhtml"; //$NON-NLS-1$
 	}
 
+	protected String getInputFolderPath() {
+		return "model"; //$NON-NLS-1$
+	}
+
 	protected String getReferenceFolderPath() {
 		return "html"; //$NON-NLS-1$
 	}
