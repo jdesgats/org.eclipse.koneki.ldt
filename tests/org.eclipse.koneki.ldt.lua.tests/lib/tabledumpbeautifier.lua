@@ -107,6 +107,6 @@ function M.prettify(serializedtablestring)
 	end
 
 	-- Format resulting code
-	return luaformatter.indentCode(serializedtablestring, '\n', '\t', 0, true)
+	return luaformatter.indentcode(serializedtablestring, '\n', true, '\t')
 end
 return M
