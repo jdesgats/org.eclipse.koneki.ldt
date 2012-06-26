@@ -9,8 +9,9 @@
 --     Sierra Wireless - initial API and implementation
 -------------------------------------------------------------------------------
 require 'errnode'
+require 'metalua.compiler'
 local internalmodelbuilder = require 'models.internalmodelbuilder'
-local tablecompare = require 'tablecompare'
+local tablecompare         = require 'tablecompare'
 
 local M = {}
 function M.test(luasourcepath, serializedreferencepath)
@@ -31,6 +32,13 @@ function M.test(luasourcepath, serializedreferencepath)
 	assert(
 		ast,
 		string.format('Unable to generate AST for %s.\n%s', luasourcepath, errormessage or '')
+	)
+
+	-- Check if an error occurred
+	local status, error = pcall(mlc.check_ast, ast)
+	assert(
+		status,
+		string.format('Generated AST contains an error.\n%s', error or '')
 	)
 
 	--
@@ -56,12 +64,12 @@ function M.test(luasourcepath, serializedreferencepath)
 		-- Compute which keys differs
 		local differentkeys = tablecompare.diff(internalmodel, referenceapimodel)
 		local differentkeysstring = table.tostring(differentkeys)
-		
+
 		-- Formalise first table output
 		local _ = '_'
 		local line = _:rep(80)
-		local firstout   = string.format('%s\nFirst table\n%s\n%s', line, line, table.tostring(internalmodel, 1))
-		local secondout  = string.format('%s\nSecond table\n%s\n%s', line, line, table.tostring(referenceapimodel, 1))
+		local firstout  = string.format('%s\nGenerated table\n%s\n%s', line, line, table.tostring(internalmodel, 1))
+		local secondout = string.format('%s\nReference table\n%s\n%s', line, line, table.tostring(referenceapimodel, 1))
 		return nil, string.format('Keys which differ are:\n%s\n%s\n%s', differentkeysstring, firstout, secondout)
 
 	end

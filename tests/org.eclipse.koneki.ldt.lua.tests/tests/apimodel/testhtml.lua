@@ -66,10 +66,10 @@ function M.test(modelsourcepath, serializedreferencepath)
 	
 	-- Actual html parsing
 	local status, pcallerror = pcall( function() 
-    	xmlparser:parse(inputhtml)
-    end)
-    assert(#errormessages == 0 and status, string.format("%s\n%s",table.concat(errormessages), tostring(pcallerror)))
-    local htmltable = handler.root
+		xmlparser:parse(inputhtml)
+	end)
+	assert(#errormessages == 0 and status, string.format("%s\n%s",table.concat(errormessages), tostring(pcallerror)))
+	local htmltable = handler.root
 
 	--
 	-- Load provided reference
@@ -88,10 +88,10 @@ function M.test(modelsourcepath, serializedreferencepath)
 	-- Generate html from reference
 	errormessages = {}
 	local status, pcallerror = pcall( function() 
-    	xmlparser:parse(htmlreference)
-    end)
-    assert(#errormessages == 0 and status, string.format("%s\n%s",table.concat(errormessages), tostring(pcallerror)))
-    local htmlreferencetable = handler.root
+		xmlparser:parse(htmlreference)
+	end)
+	assert(#errormessages == 0 and status, string.format("%s\n%s",table.concat(errormessages), tostring(pcallerror)))
+	local htmlreferencetable = handler.root
 
 	-- Check that they are equivalent
 	local equivalent = tablecompare.compare(htmltable, htmlreferencetable)
@@ -108,7 +108,8 @@ function M.test(modelsourcepath, serializedreferencepath)
 		local secondout  = string.format('%s\nReference HTML\n%s\n%s', line, line, htmlreference)
 		local firsthtml   = string.format('%s\nGenerated table\n%s\n%s', line, line, table.tostring(htmltable, 1))
 		local secondhtml  = string.format('%s\nReference table\n%s\n%s', line, line, table.tostring(htmlreferencetable, 1))
-		return nil, string.format('Keys which differ are:\n%s\n%s\n%s\n%s\n%s', differentkeysstring, firstout, secondout, firsthtml, secondhtml)	end
+		return nil, string.format('Keys which differ are:\n%s\n%s\n%s\n%s\n%s', differentkeysstring, firstout, secondout, firsthtml, secondhtml)
+	end
 	return true
 end
 return M
