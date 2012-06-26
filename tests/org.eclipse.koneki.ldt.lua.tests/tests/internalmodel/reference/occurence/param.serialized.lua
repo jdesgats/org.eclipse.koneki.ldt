@@ -10,33 +10,33 @@ do local _ = {
 							min = 10,
 							max = 10
 						}
-						--[[table: 0x8faa8f8]],
+						--[[table: 0x8554b60]],
 						definition = nil --[[ref]],
 						tag = "MIdentifier"
 					}
-					--[[table: 0x8fedf38]]
+					--[[table: 0x845cfd8]]
 				}
-				--[[table: 0x8fb88d0]],
+				--[[table: 0x8550fe0]],
 				sourcerange = {
 					min = 10,
 					max = 10
 				}
-				--[[table: 0x8fb88f8]],
+				--[[table: 0x8551008]],
 				tag = "item"
 			}
-			--[[table: 0x8fb87c0]]
+			--[[table: 0x850d288]]
 		}
-		--[[table: 0x90be4a0]],
+		--[[table: 0x844d648]],
 		content = {
 			localvars = {
 
 			}
-			--[[table: 0x90be590]],
+			--[[table: 0x844d738]],
 			sourcerange = {
 				min = 1,
 				max = 10000
 			}
-			--[[table: 0x90be5b8]],
+			--[[table: 0x8432c98]],
 			content = {
 				nil --[[ref]],
 				{
@@ -51,62 +51,62 @@ do local _ = {
 											min = 13,
 											max = 17
 										}
-										--[[table: 0x8fd6830]],
+										--[[table: 0x853ab78]],
 										definition = nil --[[ref]],
 										tag = "MIdentifier"
 									}
-									--[[table: 0x8fce280]],
+									--[[table: 0x8554ae8]],
 									{
 										sourcerange = {
-											min = 30,
-											max = 34
+											min = 29,
+											max = 33
 										}
-										--[[table: 0x8f507e8]],
+										--[[table: 0x848b600]],
 										definition = nil --[[ref]],
 										tag = "MIdentifier"
 									}
-									--[[table: 0x8f507c0]]
+									--[[table: 0x848b5d8]]
 								}
-								--[[table: 0x8f8ebd8]],
+								--[[table: 0x83d69b8]],
 								sourcerange = {
 									min = 13,
 									max = 17
 								}
-								--[[table: 0x8f8ec00]],
+								--[[table: 0x83d69e0]],
 								description = "",
 								tag = "item"
 							}
-							--[[table: 0x8f8eac8]],
+							--[[table: 0x850d260]],
 							scope = {
 								min = 0,
 								max = 0
 							}
-							--[[table: 0x8fb8798]]
+							--[[table: 0x83d6b80]]
 						}
-						--[[table: 0x8f8ed78]]
+						--[[table: 0x83d6b58]]
 					}
-					--[[table: 0x8f55330]],
+					--[[table: 0x850e8a0]],
 					sourcerange = {
 						min = 12,
-						max = 39
+						max = 37
 					}
-					--[[table: 0x8f55358]],
+					--[[table: 0x850e8c8]],
 					content = {
 						nil --[[ref]],
 						nil --[[ref]]
 					}
-					--[[table: 0x8f55308]],
+					--[[table: 0x850e878]],
 					tag = "MBlock"
 				}
-				--[[table: 0x8f55268]]
+				--[[table: 0x850e7d8]]
 			}
-			--[[table: 0x90be568]],
+			--[[table: 0x844d710]],
 			tag = "MBlock"
 		}
-		--[[table: 0x90be4c8]],
+		--[[table: 0x844d670]],
 		tag = "MInternalContent"
 	}
-	--[[table: 0x902a598]];
+	--[[table: 0x844d5a8]];
 	_.unknownglobalvars[1].occurrences[1].definition = _.unknownglobalvars[1];
 	_.content.content[1] = _.unknownglobalvars[1].occurrences[1];
 	_.content.content[2].localvars[1].item.occurrences[1].definition = _.content.content[2].localvars[1].item;

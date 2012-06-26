@@ -28,7 +28,7 @@ for k = 1, #arg do
 	local filename = arg[k]
 	local status, error = modeltransformations.codetoserialisedmodel(
 		filename,
-		'serialized.lua',
+		'serialized',
 		apimodelbuiler.createmoduleapi
 	)
 	if not status then

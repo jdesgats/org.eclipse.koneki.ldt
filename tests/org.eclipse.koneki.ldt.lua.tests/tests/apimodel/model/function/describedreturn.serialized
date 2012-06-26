@@ -1,9 +1,9 @@
-	do local _ = {
+do local _ = {
 		description = "",
 		globalvars = {
 
 		}
-		--[[table: 0x8437530]],
+		--[[table: 0x954c3d8]],
 		shortdescription = "",
 		name = "modulename",
 		returns = {
@@ -13,17 +13,17 @@
 						typename = "modulename",
 						tag = "internaltyperef"
 					}
-					--[[table: 0x84374e0]]
+					--[[table: 0x954c388]]
 				}
-				--[[table: 0x8409190]],
+				--[[table: 0x9533cb8]],
 				description = "",
 				tag = "return"
 			}
-			--[[table: 0x83e86b0]]
+			--[[table: 0x9533ba8]]
 		}
-		--[[table: 0x83b1fb0]],
+		--[[table: 0x954c400]],
 		types = {
-		["__=__1"] = {
+			["__=__1"] = {
 				shortdescription = " Function short description\010 Function long description\010 ",
 				description = "",
 				name = "__=__1",
@@ -33,20 +33,20 @@
 						types = {
 
 						}
-						--[[table: 0x841b458]],
+						--[[table: 0x94e3d70]],
 						description = "return description",
 						tag = "return"
 					}
-					--[[table: 0x8435018]]
+					--[[table: 0x94e3d48]]
 				}
-				--[[table: 0x84350b8]],
+				--[[table: 0x94e6850]],
 				params = {
 
 				}
-				--[[table: 0x8435090]],
+				--[[table: 0x94e6828]],
 				tag = "functiontypedef"
 			}
-			--[[table: 0x8434ff0]],
+			--[[table: 0x94e67a0]],
 			modulename = {
 				fields = {
 					functionname = {
@@ -54,7 +54,7 @@
 							typename = "__=__1",
 							tag = "internaltyperef"
 						}
-						--[[table: 0x841b4a8]],
+						--[[table: 0x94e3e70]],
 						description = "",
 						parent = nil --[[ref]],
 						shortdescription = " Function short description\010 Function long description\010 ",
@@ -63,33 +63,33 @@
 							min = 25,
 							max = 166
 						}
-						--[[table: 0x8465570]],
+						--[[table: 0x94e6728]],
 						occurrences = {
 
 						}
-						--[[table: 0x8465548]],
+						--[[table: 0x94e6700]],
 						tag = "item"
 					}
-					--[[table: 0x8465520]]
+					--[[table: 0x94e66d8]]
 				}
-				--[[table: 0x8380b68]],
+				--[[table: 0x952f558]],
 				name = "modulename",
 				parent = nil --[[ref]],
 				sourcerange = {
 					min = 1,
 					max = 23
 				}
-				--[[table: 0x8380b90]],
+				--[[table: 0x952f668]],
 				tag = "recordtypedef"
 			}
-			--[[table: 0x84091b8]]
+			--[[table: 0x9533d20]]
 		}
-		--[[table: 0x8437508]],
+		--[[table: 0x954c3b0]],
 		tag = "file"
 	}
-	--[[table: 0x84374b8]];
+	--[[table: 0x954c300]];
 	_.types["__=__1"].parent = _;
 	_.types.modulename.fields.functionname.parent = _.types.modulename;
 	_.types.modulename.parent = _;
 	return _;
-	end
+end

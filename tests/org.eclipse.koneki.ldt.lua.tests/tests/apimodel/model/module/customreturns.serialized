@@ -1,9 +1,9 @@
-	do local _ = {
+do local _ = {
 		description = "",
 		globalvars = {
 
 		}
-		--[[table: 0x85a03d8]],
+		--[[table: 0x94b7ab0]],
 		shortdescription = "",
 		name = "modulename",
 		returns = {
@@ -13,21 +13,21 @@
 						typename = "string",
 						tag = "primitivetyperef"
 					}
-					--[[table: 0x85a0368]]
+					--[[table: 0x950bd88]]
 				}
-				--[[table: 0x85a0340]],
+				--[[table: 0x9439e78]],
 				description = "",
 				tag = "return"
 			}
-			--[[table: 0x8899ee0]]
+			--[[table: 0x94d07c8]]
 		}
-		--[[table: 0x85a0400]],
+		--[[table: 0x94b7ad8]],
 		types = {
 
 		}
-		--[[table: 0x85a03b0]],
+		--[[table: 0x93d0d00]],
 		tag = "file"
 	}
-	--[[table: 0x8899eb8]];
+	--[[table: 0x94aee58]];
 	return _;
-	end
+end

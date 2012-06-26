@@ -2,58 +2,59 @@ do local _ = {
 		unknownglobalvars = {
 
 		}
-		--[[table: 0x8f48fc0]],
+		--[[table: 0x83add80]],
 		content = {
 			localvars = {
 
 			}
-			--[[table: 0x8fd3908]],
+			--[[table: 0x83ade70]],
 			sourcerange = {
 				min = 1,
 				max = 10000
 			}
-			--[[table: 0x8fd3930]],
+			--[[table: 0x83ade98]],
 			content = {
 				{
 					localvars = {
 
 					}
-					--[[table: 0x8f20738]],
+					--[[table: 0x83ae9a0]],
 					sourcerange = {
 						min = 12,
-						max = 17
+						max = 15
 					}
-					--[[table: 0x8f20760]],
+					--[[table: 0x83ae9c8]],
 					content = {
 
 					}
-					--[[table: 0x8f20710]],
+					--[[table: 0x83ae978]],
 					tag = "MBlock"
 				}
-				--[[table: 0x8fa4980]],
+				--[[table: 0x83ae8d8]],
 				{
 					localvars = {
 
 					}
-					--[[table: 0x8f20738]],
+					--[[table: 0x83aeda0]],
 					sourcerange = {
-						min = 20,
-						max = 25
+						min = 31,
+						max = 34
 					}
-					--[[table: 0x8f20760]],
+					--[[table: 0x83aedc8]],
 					content = {
 
 					}
-					--[[table: 0x8f20710]],
+					--[[table: 0x83aed78]],
 					tag = "MBlock"
 				}
+				--[[table: 0x83aecd8]]
 			}
-			--[[table: 0x8fd38e0]],
+			--[[table: 0x83ade48]],
 			tag = "MBlock"
 		}
-		--[[table: 0x8fd3840]],
+		--[[table: 0x83adda8]],
 		tag = "MInternalContent"
 	}
-	--[[table: 0x8f48f20]];
+	--[[table: 0x83adce0]];
 	return _;
 end

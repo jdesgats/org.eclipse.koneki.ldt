@@ -1,9 +1,9 @@
-	do local _ = {
+do local _ = {
 		description = "",
 		globalvars = {
 
 		}
-		--[[table: 0x8494130]],
+		--[[table: 0x9572640]],
 		shortdescription = "",
 		name = "mod",
 		returns = {
@@ -13,53 +13,53 @@
 						typename = "mod",
 						tag = "internaltyperef"
 					}
-					--[[table: 0x840aae0]]
+					--[[table: 0x95722a0]]
 				}
-				--[[table: 0x84439a8]],
+				--[[table: 0x9468058]],
 				description = "",
 				tag = "return"
 			}
-			--[[table: 0x8513a70]]
+			--[[table: 0x9457768]]
 		}
-		--[[table: 0x86e22b8]],
+		--[[table: 0x9572668]],
 		types = {
 			mod = {
 				fields = {
 					fieldname = {
 						parent = nil --[[ref]],
-						shortdescription = " Field short description\r\010 Field long description\r\010 ",
+						shortdescription = " Field short description\010 Field long description\010 ",
 						name = "fieldname",
 						occurrences = {
 
 						}
-						--[[table: 0x84f0788]],
+						--[[table: 0x94a3450]],
 						sourcerange = {
-							min = 20,
-							max = 115
+							min = 18,
+							max = 109
 						}
-						--[[table: 0x84fb4c8]],
+						--[[table: 0x94a3478]],
 						description = "",
 						tag = "item"
 					}
-					--[[table: 0x86103d8]]
+					--[[table: 0x94a3428]]
 				}
-				--[[table: 0x860a580]],
+				--[[table: 0x946e2e8]],
 				name = "mod",
 				parent = nil --[[ref]],
 				sourcerange = {
 					min = 1,
-					max = 17
+					max = 16
 				}
-				--[[table: 0x84c22d8]],
+				--[[table: 0x946e310]],
 				tag = "recordtypedef"
 			}
-			--[[table: 0x845eb40]]
+			--[[table: 0x9468080]]
 		}
-		--[[table: 0x8507898]],
+		--[[table: 0x95722c8]],
 		tag = "file"
 	}
-	--[[table: 0x8457250]];
+	--[[table: 0x94464c8]];
 	_.types.mod.fields.fieldname.parent = _.types.mod;
 	_.types.mod.parent = _;
 	return _;
-	end
+end

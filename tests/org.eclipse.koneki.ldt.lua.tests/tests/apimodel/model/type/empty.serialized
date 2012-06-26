@@ -1,9 +1,9 @@
-	do local _ = {
+do local _ = {
 		description = "",
 		globalvars = {
 
 		}
-		--[[table: 0x87493d8]],
+		--[[table: 0x93a6138]],
 		shortdescription = "",
 		name = "modulename",
 		returns = {
@@ -13,54 +13,54 @@
 						typename = "modulename",
 						tag = "internaltyperef"
 					}
-					--[[table: 0x87492a0]]
+					--[[table: 0x93a60e8]]
 				}
-				--[[table: 0x89612d0]],
+				--[[table: 0x93ceb08]],
 				description = "",
 				tag = "return"
 			}
-			--[[table: 0x88b5cf8]]
+			--[[table: 0x947bd80]]
 		}
-		--[[table: 0x885efe0]],
+		--[[table: 0x93a6160]],
 		types = {
 			typename = {
 				description = "",
 				fields = {
 
 				}
-				--[[table: 0x8650540]],
+				--[[table: 0x93b6320]],
 				name = "typename",
-				shortdescription = " Type short description\r\010 Type long description\r\010 ",
+				shortdescription = " Type short description\010 Type long description\010 ",
 				parent = nil --[[ref]],
 				sourcerange = {
-					min = 27,
-					max = 103
+					min = 25,
+					max = 97
 				}
-				--[[table: 0x8650568]],
+				--[[table: 0x93b6348]],
 				tag = "recordtypedef"
 			}
-			--[[table: 0x87af478]],
+			--[[table: 0x950bdc0]],
 			modulename = {
 				fields = {
 
 				}
-				--[[table: 0x86d21c8]],
+				--[[table: 0x940b7d8]],
 				name = "modulename",
 				parent = nil --[[ref]],
 				sourcerange = {
 					min = 1,
-					max = 24
+					max = 23
 				}
-				--[[table: 0x86d21f0]],
+				--[[table: 0x940b800]],
 				tag = "recordtypedef"
 			}
-			--[[table: 0x88b5d20]]
+			--[[table: 0x940b7b0]]
 		}
-		--[[table: 0x87493b0]],
+		--[[table: 0x93a6110]],
 		tag = "file"
 	}
-	--[[table: 0x8749278]];
+	--[[table: 0x951aea8]];
 	_.types.typename.parent = _;
 	_.types.modulename.parent = _;
 	return _;
-	end
+end

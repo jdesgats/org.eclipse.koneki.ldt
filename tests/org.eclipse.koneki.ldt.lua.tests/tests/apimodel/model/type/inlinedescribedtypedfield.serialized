@@ -1,9 +1,9 @@
-	do local _ = {
+do local _ = {
 		description = "",
 		globalvars = {
 
 		}
-		--[[table: 0x87178d8]],
+		--[[table: 0x95690f0]],
 		shortdescription = "",
 		name = "modulename",
 		returns = {
@@ -13,15 +13,15 @@
 						typename = "modulename",
 						tag = "internaltyperef"
 					}
-					--[[table: 0x891b470]]
+					--[[table: 0x9523af0]]
 				}
-				--[[table: 0x898bbc0]],
+				--[[table: 0x93b5878]],
 				description = "",
 				tag = "return"
 			}
-			--[[table: 0x873e150]]
+			--[[table: 0x944d4e8]]
 		}
-		--[[table: 0x8717938]],
+		--[[table: 0x9569118]],
 		types = {
 			typename = {
 				description = "",
@@ -31,58 +31,58 @@
 							typename = "string",
 							tag = "primitivetyperef"
 						}
-						--[[table: 0x861f530]],
+						--[[table: 0x94aa058]],
 						description = "",
 						parent = nil --[[ref]],
 						shortdescription = "field short description",
 						name = "fieldname",
 						sourcerange = {
-							min = 27,
-							max = 157
+							min = 25,
+							max = 150
 						}
-						--[[table: 0x87ad928]],
+						--[[table: 0x94a9ff0]],
 						occurrences = {
 
 						}
-						--[[table: 0x8634f78]],
+						--[[table: 0x94a9fc8]],
 						tag = "item"
 					}
-					--[[table: 0x8847050]]
+					--[[table: 0x9532418]]
 				}
-				--[[table: 0x8b2b540]],
+				--[[table: 0x94b78f0]],
 				name = "typename",
-				shortdescription = " Type short description\r\010 Type long description\r\010 ",
+				shortdescription = " Type short description\010 Type long description\010 ",
 				parent = nil --[[ref]],
 				sourcerange = {
-					min = 27,
-					max = 157
+					min = 25,
+					max = 150
 				}
-				--[[table: 0x856c5d0]],
+				--[[table: 0x94b7918]],
 				tag = "recordtypedef"
 			}
-			--[[table: 0x8b28d90]],
+			--[[table: 0x94b78c8]],
 			modulename = {
 				fields = {
 
 				}
-				--[[table: 0x8851760]],
+				--[[table: 0x94768f8]],
 				name = "modulename",
 				parent = nil --[[ref]],
 				sourcerange = {
 					min = 1,
-					max = 24
+					max = 23
 				}
-				--[[table: 0x865c120]],
+				--[[table: 0x9476920]],
 				tag = "recordtypedef"
 			}
-			--[[table: 0x8754198]]
+			--[[table: 0x94768d0]]
 		}
-		--[[table: 0x87969b8]],
+		--[[table: 0x95690c8]],
 		tag = "file"
 	}
-	--[[table: 0x86afb88]];
+	--[[table: 0x9523ac8]];
 	_.types.typename.fields.fieldname.parent = _.types.typename;
 	_.types.typename.parent = _;
 	_.types.modulename.parent = _;
 	return _;
-	end
+end

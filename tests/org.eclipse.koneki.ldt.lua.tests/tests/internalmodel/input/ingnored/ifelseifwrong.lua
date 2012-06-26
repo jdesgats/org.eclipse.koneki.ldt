@@ -1,5 +1,5 @@
 if true then
 
-elseif false then
+elseif
 
 end

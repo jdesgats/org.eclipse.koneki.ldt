@@ -1,9 +1,9 @@
-	do local _ = {
+do local _ = {
 		description = "",
 		globalvars = {
 
 		}
-		--[[table: 0x849af78]],
+		--[[table: 0x950e568]],
 		shortdescription = "",
 		name = "modulename",
 		returns = {
@@ -13,17 +13,17 @@
 						typename = "modulename",
 						tag = "internaltyperef"
 					}
-					--[[table: 0x85ae480]]
+					--[[table: 0x950e540]]
 				}
-				--[[table: 0x87a2898]],
+				--[[table: 0x94d9958]],
 				description = "",
 				tag = "return"
 			}
-			--[[table: 0x8668188]]
+			--[[table: 0x956f290]]
 		}
-		--[[table: 0x86a8ec8]],
+		--[[table: 0x93bcbe8]],
 		types = {
-		["__#string=__1"] = {
+			["__#string=__1"] = {
 				shortdescription = " Function short description\010 Function long description\010 ",
 				description = "",
 				name = "__#string=__1",
@@ -35,22 +35,22 @@
 								typename = "string",
 								tag = "primitivetyperef"
 							}
-							--[[table: 0x86391c8]]
+							--[[table: 0x94460b8]]
 						}
-						--[[table: 0x860e0d0]],
+						--[[table: 0x9446090]],
 						description = "",
 						tag = "return"
 					}
-					--[[table: 0x878cd50]]
+					--[[table: 0x9530f40]]
 				}
-				--[[table: 0x8662970]],
+				--[[table: 0x9446068]],
 				params = {
 
 				}
-				--[[table: 0x8662948]],
+				--[[table: 0x9446040]],
 				tag = "functiontypedef"
 			}
-			--[[table: 0x86628a8]],
+			--[[table: 0x93e6d38]],
 			modulename = {
 				fields = {
 					functionname = {
@@ -58,7 +58,7 @@
 							typename = "__#string=__1",
 							tag = "internaltyperef"
 						}
-						--[[table: 0x85adef0]],
+						--[[table: 0x94dcf98]],
 						description = "",
 						parent = nil --[[ref]],
 						shortdescription = " Function short description\010 Function long description\010 ",
@@ -67,33 +67,33 @@
 							min = 25,
 							max = 155
 						}
-						--[[table: 0x88564d8]],
+						--[[table: 0x93e6cd0]],
 						occurrences = {
 
 						}
-						--[[table: 0x8739b98]],
+						--[[table: 0x947aa28]],
 						tag = "item"
 					}
-					--[[table: 0x87b9630]]
+					--[[table: 0x9477ee8]]
 				}
-				--[[table: 0x862e410]],
+				--[[table: 0x9420990]],
 				name = "modulename",
 				parent = nil --[[ref]],
 				sourcerange = {
 					min = 1,
 					max = 23
 				}
-				--[[table: 0x8572028]],
+				--[[table: 0x953f278]],
 				tag = "recordtypedef"
 			}
-			--[[table: 0x877def0]]
+			--[[table: 0x94d9980]]
 		}
-		--[[table: 0x8749848]],
+		--[[table: 0x94d99c8]],
 		tag = "file"
 	}
-	--[[table: 0x85ae458]];
+	--[[table: 0x950e518]];
 	_.types["__#string=__1"].parent = _;
 	_.types.modulename.fields.functionname.parent = _.types.modulename;
 	_.types.modulename.parent = _;
 	return _;
-	end
+end
