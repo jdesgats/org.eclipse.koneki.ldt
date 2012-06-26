@@ -1,6 +1,6 @@
 ---
 -- Module to process.
--- See @{modulename}
--- @module externalmodule
+-- See @{anothermodulename}
+-- @module modulename
 
 return nil

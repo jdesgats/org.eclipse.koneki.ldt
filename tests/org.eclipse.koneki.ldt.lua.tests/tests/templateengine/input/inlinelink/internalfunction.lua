@@ -1,10 +1,9 @@
 ---
 -- Module to process.
--- See @{internalfunction#(internalfunction).foo}
--- @module internalfunction
+-- See @{#(modulename).functionname}
+-- @module modulename
 
 ---
--- Foo function.
--- @function [parent=#internalfunction] foo
+-- @function [parent=#modulename] functionname
 
 return nil

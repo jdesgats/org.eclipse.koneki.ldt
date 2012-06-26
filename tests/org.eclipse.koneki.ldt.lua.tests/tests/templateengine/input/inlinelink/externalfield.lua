@@ -1,6 +1,6 @@
 ---
 -- Module to process.
--- See @{modulename#(typename).fieldname}
--- @module externalfield
+-- See @{anothermodulename#(typename).fieldname}
+-- @module modulename
 
 return nil

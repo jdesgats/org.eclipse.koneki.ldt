@@ -1,9 +1,9 @@
 ---
 -- Module to process.
--- See @{internaltype#(mytype)}
--- @module internaltype
+-- See @{#typename}
+-- @module modulename
 
 ---
--- @type mytype
+-- @type typename
 
 return nil

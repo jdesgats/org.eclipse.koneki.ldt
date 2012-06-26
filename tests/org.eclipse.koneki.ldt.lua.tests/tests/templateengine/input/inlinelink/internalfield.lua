@@ -1,10 +1,10 @@
 ---
 -- Module to process.
--- See @{internalfield#(mytype).myfield}
--- @module internalfield
+-- See @{#(typename).fieldname}
+-- @module modulename
 
 ---
--- @type mytype
--- @field myfield
+-- @type typename
+-- @field fieldname
 
 return nil
