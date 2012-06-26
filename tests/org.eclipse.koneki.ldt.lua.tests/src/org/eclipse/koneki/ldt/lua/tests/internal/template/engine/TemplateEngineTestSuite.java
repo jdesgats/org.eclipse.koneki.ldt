@@ -10,6 +10,9 @@
  *******************************************************************************/
 package org.eclipse.koneki.ldt.lua.tests.internal.template.engine;
 
+import java.util.ArrayList;
+import java.util.List;
+
 import org.eclipse.koneki.ldt.lua.tests.internal.utils.AbstractLuaTestSuite;
 
 /**
@@ -20,6 +23,21 @@ public class TemplateEngineTestSuite extends AbstractLuaTestSuite {
 
 	public TemplateEngineTestSuite(boolean ignore) {
 		super("Template Engine", "tests/templateengine/", "html", ignore); //$NON-NLS-1$ //$NON-NLS-2$ //$NON-NLS-3$
+	}
+
+	@Override
+	protected List<String> createTestBlacklist() {
+		ArrayList<String> blacklist = new ArrayList<String>();
+		blacklist.add("markdown/code2.lua"); //$NON-NLS-1$
+		blacklist.add("markdown/paragraph.lua"); //$NON-NLS-1$
+		blacklist.add("inlinelink/internalfield.lua"); //$NON-NLS-1$
+		blacklist.add("inlinelink/internaltype.lua"); //$NON-NLS-1$
+		blacklist.add("inlinelink/internalfunction.lua"); //$NON-NLS-1$
+		blacklist.add("inlinelink/externalmodule.lua"); //$NON-NLS-1$
+		blacklist.add("inlinelink/externalfunction.lua"); //$NON-NLS-1$
+		blacklist.add("inlinelink/externaltype.lua"); //$NON-NLS-1$
+		blacklist.add("inlinelink/externalfield.lua"); //$NON-NLS-1$
+		return blacklist;
 	}
 
 }

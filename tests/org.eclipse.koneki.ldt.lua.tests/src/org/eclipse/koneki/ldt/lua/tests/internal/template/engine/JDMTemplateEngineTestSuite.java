@@ -10,6 +10,7 @@
  *******************************************************************************/
 package org.eclipse.koneki.ldt.lua.tests.internal.template.engine;
 
+import java.util.ArrayList;
 import java.util.List;
 
 import junit.framework.TestCase;
@@ -103,5 +104,12 @@ public class JDMTemplateEngineTestSuite extends AbstractLuaTestSuite {
 				};
 			}
 		};
+	}
+
+	@Override
+	protected List<String> createTestBlacklist() {
+		ArrayList<String> blacklist = new ArrayList<String>();
+		blacklist.add("paragraph.lua"); //$NON-NLS-1$
+		return blacklist;
 	}
 }

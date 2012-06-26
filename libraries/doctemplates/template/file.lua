@@ -66,8 +66,7 @@ return[[#
 #
 # -- show quick description type exposed by module
 # if currenttype then
-	<a id="$(anchor(currenttype))" />
-	<h2>Type <code>$(currenttype.name)</code></h2>
+	<h2><a id="$(anchor(currenttype))" >Type <code>$(currenttype.name)</code></a></h2>
 	$( applytemplate(currenttype, 'index') )
 # end
 # --

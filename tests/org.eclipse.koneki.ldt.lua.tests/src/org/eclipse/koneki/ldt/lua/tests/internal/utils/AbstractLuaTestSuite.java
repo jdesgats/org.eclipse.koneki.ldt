@@ -15,6 +15,7 @@ import java.io.IOException;
 import java.net.URL;
 import java.text.MessageFormat;
 import java.util.ArrayList;
+import java.util.Collections;
 import java.util.List;
 
 import junit.framework.TestCase;
@@ -31,9 +32,9 @@ import org.osgi.framework.Bundle;
  */
 public abstract class AbstractLuaTestSuite extends TestSuite {
 
-	private static final String IGNORE_FOLDER_NAME = "ignore"; //$NON-NLS-1$
 	private static final String COMMON_LIB_FOLDER = "/lib"; //$NON-NLS-1$
 	private static final String COMMON_EXTERNAL_LIB_FOLDER = "/lib/external"; //$NON-NLS-1$
+	private List<String> blacklist;
 
 	/**
 	 * 
@@ -74,16 +75,8 @@ public abstract class AbstractLuaTestSuite extends TestSuite {
 				final IPath inputFilePath = new Path(inputFile.getCanonicalPath());
 				final IPath relativeToFolderPath = inputFilePath.makeRelativeTo(new Path(inputFolder.getCanonicalPath()));
 
-				// Ignore ignore folder
-				IPath relativeToFolderPathWithoutIgnore;
-				if (relativeToFolderPath.segment(0).equals(IGNORE_FOLDER_NAME)) {
-					relativeToFolderPathWithoutIgnore = relativeToFolderPath.makeRelativeTo(new Path(IGNORE_FOLDER_NAME));
-				} else {
-					relativeToFolderPathWithoutIgnore = relativeToFolderPath;
-				}
-
 				// Build reference file path
-				IPath referenceFilePath = new Path(referenceFolder.getCanonicalPath()).append(relativeToFolderPathWithoutIgnore);
+				IPath referenceFilePath = new Path(referenceFolder.getCanonicalPath()).append(relativeToFolderPath);
 				referenceFilePath = referenceFilePath.removeFileExtension();
 				referenceFilePath = referenceFilePath.addFileExtension(referenceFileExtension);
 
@@ -94,10 +87,10 @@ public abstract class AbstractLuaTestSuite extends TestSuite {
 				path.add(folderPath);
 
 				// Compute testName
-				String testName = MessageFormat.format("{0}#{1}", getName(), relativeToFolderPath.toOSString()); //$NON-NLS-1$
+				final String testName = MessageFormat.format("{0}#{1}", getName(), relativeToFolderPath.toOSString()); //$NON-NLS-1$
 
-				// Append test case
-				if (!(ignore && relativeToFolderPath.segment(0).equals(IGNORE_FOLDER_NAME))) {
+				// Append test case and ignore blacklisted files
+				if (!(ignore && getTestBlacklisted().contains(relativeToFolderPath.toPortableString()))) {
 					addTest(createTestCase(testName, getTestModuleName(), inputFilePath, referenceFilePath, path));
 				}
 			}
@@ -105,6 +98,17 @@ public abstract class AbstractLuaTestSuite extends TestSuite {
 			final String message = MessageFormat.format("Unable to locate {0}.", folderPath); //$NON-NLS-1$
 			raiseRuntimeException(message, e);
 		}
+	}
+
+	private List<String> getTestBlacklisted() {
+		if (blacklist == null) {
+			blacklist = createTestBlacklist();
+		}
+		return blacklist;
+	}
+
+	protected List<String> createTestBlacklist() {
+		return Collections.<String> emptyList();
 	}
 
 	private File checkFolder(final IPath folderAbosultePath, final String errorMessage) {

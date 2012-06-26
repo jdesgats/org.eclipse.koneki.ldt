@@ -10,6 +10,7 @@
  *******************************************************************************/
 package org.eclipse.koneki.ldt.lua.tests.internal.ast.models.internal;
 
+import java.util.ArrayList;
 import java.util.List;
 
 import junit.framework.TestCase;
@@ -27,5 +28,13 @@ public class InternalModelTestSuite extends AbstractLuaTestSuite {
 	@Override
 	protected TestCase createTestCase(final String testName, final String testModuleName, final IPath source, final IPath ref, final List<String> path) {
 		return new ModelTestCase(testName, testModuleName, source, ref, path);
+	}
+
+	@Override
+	protected List<String> createTestBlacklist() {
+		ArrayList<String> blacklist = new ArrayList<String>();
+		blacklist.add("block/ifelseifwrong.lua"); //$NON-NLS-1$
+		blacklist.add("scope/scope.lua"); //$NON-NLS-1$
+		return blacklist;
 	}
 }

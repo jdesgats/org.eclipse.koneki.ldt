@@ -68,7 +68,7 @@ function M.test(modelsourcepath, serializedreferencepath)
 	local status, pcallerror = pcall( function() 
 		xmlparser:parse(inputhtml)
 	end)
-	assert(#errormessages == 0 and status, string.format("%s\n%s",table.concat(errormessages), tostring(pcallerror)))
+	assert(#errormessages == 0 and status, string.format("%s\n%s\n%s",table.concat(errormessages), tostring(pcallerror),inputhtml))
 	local htmltable = handler.root
 
 	--
@@ -90,7 +90,7 @@ function M.test(modelsourcepath, serializedreferencepath)
 	local status, pcallerror = pcall( function() 
 		xmlparser:parse(htmlreference)
 	end)
-	assert(#errormessages == 0 and status, string.format("%s\n%s",table.concat(errormessages), tostring(pcallerror)))
+	assert(#errormessages == 0 and status, string.format("%s\n%s\n%s",table.concat(errormessages), tostring(pcallerror),htmlreference))
 	local htmlreferencetable = handler.root
 
 	-- Check that they are equivalent

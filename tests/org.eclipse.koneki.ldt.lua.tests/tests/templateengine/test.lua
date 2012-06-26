@@ -70,7 +70,7 @@ function M.test(luasourcepath, referencepath)
 	local status, pcallerror = pcall( function()
 		xmlparser:parse(docGenerated)
 	end)
-	assert(#errormessages == 0 and status , string.format("%s\n%s",table.concat(errormessages), tostring(pcallerror)))
+	assert(#errormessages == 0 and status , string.format("%s\n%s\n%s",table.concat(errormessages), tostring(pcallerror), docGenerated))
 
 	local docGeneratedTable = h.root;
 
@@ -94,7 +94,7 @@ function M.test(luasourcepath, referencepath)
 	local status, pcallerror = pcall( function()
 		xmlparser:parse(referencehtml)
 	end)
-	assert(#errormessages == 0, string.format("%s\n%s",table.concat(errormessages), tostring(pcallerror)))
+	assert(#errormessages == 0, string.format("%s\n%s\n%s",table.concat(errormessages), tostring(pcallerror), referencehtml))
 	local referencetable = h.root;
 
 	-- Check that they are equivalent

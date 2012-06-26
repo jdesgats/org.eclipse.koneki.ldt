@@ -10,6 +10,9 @@
  *******************************************************************************/
 package org.eclipse.koneki.ldt.lua.tests.internal.ast.models.api;
 
+import java.util.ArrayList;
+import java.util.List;
+
 import org.eclipse.koneki.ldt.lua.tests.internal.utils.AbstractLuaTestSuite;
 
 public class APIModelToHTMLTestSuite extends AbstractLuaTestSuite {
@@ -28,6 +31,31 @@ public class APIModelToHTMLTestSuite extends AbstractLuaTestSuite {
 
 	protected String getReferenceFolderPath() {
 		return "html"; //$NON-NLS-1$
+	}
+
+	@Override
+	protected List<String> createTestBlacklist() {
+		ArrayList<String> blacklist = new ArrayList<String>();
+		blacklist.add("global/field.serialized"); //$NON-NLS-1$
+		blacklist.add("global/typedfield.serialized"); //$NON-NLS-1$
+		blacklist.add("function/empty.serialized"); //$NON-NLS-1$
+		blacklist.add("function/describedreturn.serialized"); //$NON-NLS-1$
+		blacklist.add("function/typedreturn.serialized"); //$NON-NLS-1$
+		blacklist.add("function/describedtypedreturn.serialized"); //$NON-NLS-1$
+		blacklist.add("function/typedparam.serialized"); //$NON-NLS-1$
+		blacklist.add("function/describedparam.serialized"); //$NON-NLS-1$
+		blacklist.add("function/describedtypedparam.serialized"); //$NON-NLS-1$
+		blacklist.add("type/inlinetypedfield.serialized"); //$NON-NLS-1$
+		blacklist.add("type/field.serialized"); //$NON-NLS-1$
+		blacklist.add("type/typedfield.serialized"); //$NON-NLS-1$
+		blacklist.add("type/inlinefield.serialized"); //$NON-NLS-1$
+		blacklist.add("type/empty.serialized"); //$NON-NLS-1$
+		blacklist.add("type/inlinedescribedtypedfield.serialized"); //$NON-NLS-1$
+		blacklist.add("typref/primitive.serialized"); //$NON-NLS-1$
+		blacklist.add("typref/internal.serialized"); //$NON-NLS-1$
+		blacklist.add("typref/external.serialized"); //$NON-NLS-1$
+		blacklist.add("module/shortlongdescription2.serialized"); //$NON-NLS-1$
+		return blacklist;
 	}
 
 }

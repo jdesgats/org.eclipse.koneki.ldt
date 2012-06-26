@@ -30,7 +30,7 @@
 	      <version>${tycho-version}</version>
 	      <configuration>
 	     	<includes>
-	     		<include>**/AllLuaTests.*</include>
+	     		<include>**/AllLuaTestsIgnoreFailure.*</include>
 	     	</includes>
 	     	<dependencies>
 				<dependency>
