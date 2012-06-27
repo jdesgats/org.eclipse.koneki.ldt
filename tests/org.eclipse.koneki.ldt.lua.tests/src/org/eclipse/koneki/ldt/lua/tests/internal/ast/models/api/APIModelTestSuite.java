@@ -42,8 +42,11 @@ public class APIModelTestSuite extends AbstractLuaTestSuite {
 	protected List<String> createTestBlacklist() {
 		final List<String> blacklist = new ArrayList<String>(3);
 		blacklist.add("usage/module.lua"); //$NON-NLS-1$
+		blacklist.add("usage/module2.lua"); //$NON-NLS-1$
 		blacklist.add("usage/function.lua"); //$NON-NLS-1$
+		blacklist.add("usage/function2.lua"); //$NON-NLS-1$
 		blacklist.add("usage/type.lua"); //$NON-NLS-1$
+		blacklist.add("usage/type2.lua"); //$NON-NLS-1$
 		return blacklist;
 	}
 }

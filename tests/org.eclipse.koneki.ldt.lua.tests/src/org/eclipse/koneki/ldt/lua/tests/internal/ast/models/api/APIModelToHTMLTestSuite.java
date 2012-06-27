@@ -56,9 +56,13 @@ public class APIModelToHTMLTestSuite extends AbstractLuaTestSuite {
 		blacklist.add("typref/external.serialized"); //$NON-NLS-1$
 		blacklist.add("module/shortlongdescription2.serialized"); //$NON-NLS-1$
 		blacklist.add("usage/module.serialized"); //$NON-NLS-1$
+		blacklist.add("usage/module2.serialized"); //$NON-NLS-1$
 		blacklist.add("usage/field.serialized"); //$NON-NLS-1$
+		blacklist.add("usage/field2.serialized"); //$NON-NLS-1$
 		blacklist.add("usage/function.serialized"); //$NON-NLS-1$
+		blacklist.add("usage/function2.serialized"); //$NON-NLS-1$
 		blacklist.add("usage/type.serialized"); //$NON-NLS-1$
+		blacklist.add("usage/type2.serialized"); //$NON-NLS-1$
 		return blacklist;
 	}
 

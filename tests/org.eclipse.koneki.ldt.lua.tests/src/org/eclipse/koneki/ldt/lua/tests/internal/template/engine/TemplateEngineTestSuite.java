@@ -34,9 +34,6 @@ public class TemplateEngineTestSuite extends AbstractLuaTestSuite {
 		blacklist.add("inlinelink/internaltype.lua"); //$NON-NLS-1$
 		blacklist.add("inlinelink/internalfunction.lua"); //$NON-NLS-1$
 		blacklist.add("inlinelink/externalmodule.lua"); //$NON-NLS-1$
-		blacklist.add("inlinelink/externalfunction.lua"); //$NON-NLS-1$
-		blacklist.add("inlinelink/externaltype.lua"); //$NON-NLS-1$
-		blacklist.add("inlinelink/externalfield.lua"); //$NON-NLS-1$
 		return blacklist;
 	}
 
