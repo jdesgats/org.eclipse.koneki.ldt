@@ -16,7 +16,8 @@ Require-Bundle: org.eclipse.core.runtime;bundle-version="3.5.0",
  com.cforcoding.jmd;bundle-version="0.8.1"
 Bundle-ActivationPolicy: lazy
 Bundle-RequiredExecutionEnvironment: JavaSE-1.6
-Export-Package: org.eclipse.koneki.ldt.lua.tests,
+Export-Package: diff.match.patch;x-internal:=true,
+ org.eclipse.koneki.ldt.lua.tests,
  org.eclipse.koneki.ldt.lua.tests.internal;x-internal:=true,
  org.eclipse.koneki.ldt.lua.tests.internal.ast.models.api;x-internal:=true,
  org.eclipse.koneki.ldt.lua.tests.internal.ast.models.internal;x-internal:=true,
@@ -24,3 +25,5 @@ Export-Package: org.eclipse.koneki.ldt.lua.tests,
  org.eclipse.koneki.ldt.lua.tests.internal.template.engine;x-internal:=true,
  org.eclipse.koneki.ldt.lua.tests.internal.utils;x-internal:=true
 Bundle-Vendor: %Bundle-Vendor
+Bundle-ClassPath: libjava/dmp.jar,
+ .

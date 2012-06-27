@@ -101,14 +101,31 @@ function M.test(modelsourcepath, serializedreferencepath)
 		local differentkeys = tablecompare.diff(htmltable, htmlreferencetable)
 		local differentkeysstring = table.tostring(differentkeys)
 		
+		-- Convert table in formatted string
+		local xmlformatter = require("xmlformatter")
+		local htmlformattedstring= xmlformatter.xmltostring(htmltable)
+		local htmlformattedreferencestring = xmlformatter.xmltostring(htmlreferencetable)
+		
+		-- Create the diff
+		local diffclass = java.require("diff.match.patch.diff_match_patch")
+		local diff = diffclass:new()
+		local differences = diff:diff_main(htmlformattedstring,htmlformattedreferencestring)
+		diff:diff_cleanupSemantic(differences)
+		
+		-- Prettify the result
+		local diffutil = java.require("org.eclipse.koneki.ldt.lua.tests.internal.utils.DiffUtil")
+		local prettydiff = diffutil:diff_pretty_diff(differences)
+		
 		-- Formalise first table output
 		local _ = '_'
 		local line = _:rep(80)
-		local firstout   = string.format('%s\nGenerated HTML\n%s\n%s', line, line, inputhtml)
-		local secondout  = string.format('%s\nReference HTML\n%s\n%s', line, line, htmlreference)
-		local firsthtml   = string.format('%s\nGenerated table\n%s\n%s', line, line, table.tostring(htmltable, 1))
-		local secondhtml  = string.format('%s\nReference table\n%s\n%s', line, line, table.tostring(htmlreferencetable, 1))
-		return nil, string.format('Keys which differ are:\n%s\n%s\n%s\n%s\n%s', differentkeysstring, firstout, secondout, firsthtml, secondhtml)
+		local stringdiff = string.format('%s\nString Diff \n%s\n%s', line, line, prettydiff)
+		local generatedhtml   = string.format('%s\nGenerated HTML\n%s\n%s', line, line, inputhtml)
+		local referencehtml  = string.format('%s\nReference HTML\n%s\n%s', line, line, htmlreference)
+		local tablediff = string.format('%s\Table Diff \n%s\n%s', line, line, differentkeysstring)
+		local generatedtable   = string.format('%s\nGenerated table\n%s\n%s', line, line, table.tostring(htmltable, 1))
+		local referencetable  = string.format('%s\nReference table\n%s\n%s', line, line, table.tostring(htmlreferencetable, 1))
+		return nil, string.format('Keys which differ are:\n%s\n%s\n%s\n%s\n%s\n%s',stringdiff, generatedhtml, referencehtml, tablediff, generatedtable, referencetable)
 	end
 	return true
 end

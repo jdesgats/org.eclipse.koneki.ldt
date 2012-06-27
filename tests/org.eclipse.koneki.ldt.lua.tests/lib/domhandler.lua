@@ -95,7 +95,7 @@ function M.createhandler()
             self.current = self.current._parent
     end
     obj.text = function(self,t)
-    		if (self.current._name ~= "code" and self.current._name ~= "pre") then
+    		if (self.current._name ~= "pre") then
     			t = heavytrim(t)
     		end
     		if (t ~= "") then
