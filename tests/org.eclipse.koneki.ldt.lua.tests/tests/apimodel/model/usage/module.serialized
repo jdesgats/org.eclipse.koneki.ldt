@@ -1,0 +1,89 @@
+do local _ = {
+		description = "",
+		globalvars = {
+
+		}
+		--[[table: 0x84a5f00]],
+		metadata = {
+			usage = {
+				{
+					tagname = "usage",
+					description = "local samples",
+					lineinfo = {
+						last = {
+							offset = 6,
+							line = 1,
+							source = "Third party tag lexer",
+							column = 6,
+							id = 7580
+						}
+						--[[<Third party tag lexer|L1|C6|K6>]],
+						first = {
+							offset = 1,
+							line = 1,
+							source = "Third party tag lexer",
+							facing = {
+								offset = 1,
+								line = 1,
+								source = "Third party tag lexer",
+								facing = nil --[[ref]],
+								column = 1,
+								id = 7576
+							}
+							--[[<Third party tag lexer|L1|C1|K1>]],
+							column = 1,
+							id = 7577
+						}
+						--[[<Third party tag lexer|L1|C1|K1>]]
+					}
+					--[[<Third party tag lexer|L1|C1-6|K1-6>]],
+					name = "usage"
+				}
+				--[[table: 0x8432148]]
+			}
+			--[[table: 0x8488c50]]
+		}
+		--[[table: 0x8488c28]],
+		shortdescription = "",
+		name = "modulename",
+		returns = {
+			{
+				types = {
+					{
+						typename = "modulename",
+						tag = "internaltyperef"
+					}
+					--[[table: 0x84b8a10]]
+				}
+				--[[table: 0x84c6488]],
+				description = "",
+				tag = "return"
+			}
+			--[[table: 0x84c63e8]]
+		}
+		--[[table: 0x84a5f28]],
+		types = {
+			modulename = {
+				fields = {
+
+				}
+				--[[table: 0x8488b78]],
+				name = "modulename",
+				parent = nil --[[ref]],
+				sourcerange = {
+					min = 1,
+					max = 50
+				}
+				--[[table: 0x8488ba0]],
+				tag = "recordtypedef"
+			}
+			--[[table: 0x85027b8]]
+		}
+		--[[table: 0x84c64d0]],
+		tag = "file"
+	}
+	--[[table: 0x84b89e8]];
+	_.metadata.usage[1].lineinfo.first.facing.facing = _.metadata.usage[1].lineinfo.first;
+	_.types.modulename.parent = _;
+	return _;
+end

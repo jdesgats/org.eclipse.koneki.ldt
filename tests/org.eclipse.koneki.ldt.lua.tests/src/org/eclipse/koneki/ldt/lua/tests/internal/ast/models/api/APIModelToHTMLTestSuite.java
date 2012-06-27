@@ -35,7 +35,7 @@ public class APIModelToHTMLTestSuite extends AbstractLuaTestSuite {
 
 	@Override
 	protected List<String> createTestBlacklist() {
-		ArrayList<String> blacklist = new ArrayList<String>();
+		final ArrayList<String> blacklist = new ArrayList<String>();
 		blacklist.add("global/field.serialized"); //$NON-NLS-1$
 		blacklist.add("global/typedfield.serialized"); //$NON-NLS-1$
 		blacklist.add("function/empty.serialized"); //$NON-NLS-1$
@@ -55,6 +55,10 @@ public class APIModelToHTMLTestSuite extends AbstractLuaTestSuite {
 		blacklist.add("typref/internal.serialized"); //$NON-NLS-1$
 		blacklist.add("typref/external.serialized"); //$NON-NLS-1$
 		blacklist.add("module/shortlongdescription2.serialized"); //$NON-NLS-1$
+		blacklist.add("usage/module.serialized"); //$NON-NLS-1$
+		blacklist.add("usage/field.serialized"); //$NON-NLS-1$
+		blacklist.add("usage/function.serialized"); //$NON-NLS-1$
+		blacklist.add("usage/type.serialized"); //$NON-NLS-1$
 		return blacklist;
 	}
 

@@ -10,6 +10,7 @@
  *******************************************************************************/
 package org.eclipse.koneki.ldt.lua.tests.internal.ast.models.api;
 
+import java.util.ArrayList;
 import java.util.List;
 
 import junit.framework.TestCase;
@@ -35,5 +36,14 @@ public class APIModelTestSuite extends AbstractLuaTestSuite {
 
 	protected String getReferenceFolderPath() {
 		return "model"; //$NON-NLS-1$
+	}
+
+	@Override
+	protected List<String> createTestBlacklist() {
+		final List<String> blacklist = new ArrayList<String>(3);
+		blacklist.add("usage/module.lua"); //$NON-NLS-1$
+		blacklist.add("usage/function.lua"); //$NON-NLS-1$
+		blacklist.add("usage/type.lua"); //$NON-NLS-1$
+		return blacklist;
 	}
 }

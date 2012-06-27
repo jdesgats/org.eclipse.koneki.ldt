@@ -1,0 +1,106 @@
+do local _ = {
+		description = "",
+		globalvars = {
+
+		}
+		--[[table: 0x8384ad8]],
+		shortdescription = "",
+		name = "modulename",
+		returns = {
+			{
+				types = {
+					{
+						typename = "modulename",
+						tag = "internaltyperef"
+					}
+					--[[table: 0x83849a0]]
+				}
+				--[[table: 0x8384a68]],
+				description = "",
+				tag = "return"
+			}
+			--[[table: 0x83849c8]]
+		}
+		--[[table: 0x8384b00]],
+		types = {
+			modulename = {
+				fields = {
+					fieldnames = {
+						description = "",
+						parent = nil --[[ref]],
+						metadata = {
+							usage = {
+								{
+									tagname = "usage",
+									description = "local code",
+									lineinfo = {
+										last = {
+											offset = 6,
+											line = 1,
+											source = "Third party tag lexer",
+											column = 6,
+											id = 93
+										}
+										--[[<Third party tag lexer|L1|C6|K6>]],
+										first = {
+											offset = 1,
+											line = 1,
+											source = "Third party tag lexer",
+											facing = {
+												offset = 1,
+												line = 1,
+												source = "Third party tag lexer",
+												facing = nil --[[ref]],
+												column = 1,
+												id = 89
+											}
+											--[[<Third party tag lexer|L1|C1|K1>]],
+											column = 1,
+											id = 90
+										}
+										--[[<Third party tag lexer|L1|C1|K1>]]
+									}
+									--[[<Third party tag lexer|L1|C1-6|K1-6>]],
+									name = "usage"
+								}
+								--[[table: 0x83dd010]]
+							}
+							--[[table: 0x83dd200]]
+						}
+						--[[table: 0x83dd370]],
+						shortdescription = "",
+						name = "fieldnames",
+						sourcerange = {
+							min = 28,
+							max = 94
+						}
+						--[[table: 0x83dd310]],
+						occurrences = {
+
+						}
+						--[[table: 0x83dd2e8]],
+						tag = "item"
+					}
+					--[[table: 0x83dd1d8]]
+				}
+				--[[table: 0x83d4ae0]],
+				name = "modulename",
+				parent = nil --[[ref]],
+				sourcerange = {
+					min = 1,
+					max = 26
+				}
+				--[[table: 0x83d4b08]],
+				tag = "recordtypedef"
+			}
+			--[[table: 0x83d49d0]]
+		}
+		--[[table: 0x8384ab0]],
+		tag = "file"
+	}
+	--[[table: 0x8384978]];
+	_.types.modulename.fields.fieldnames.parent = _.types.modulename;
+	_.types.modulename.fields.fieldnames.metadata.usage[1].lineinfo.first.facing.facing = _.types.modulename.fields.fieldnames.metadata.usage[1].lineinfo.first;
+	_.types.modulename.parent = _;
+	return _;
+end
