@@ -14,6 +14,7 @@ local domhandler      = require 'domhandler'
 local tablecompare    = require 'tablecompare'
 local templateengine  = require 'templateengine'
 local xml = require 'xml'
+local testutil = require 'testutil'
 
 --
 -- Loading template engine environment
@@ -24,31 +25,12 @@ end
 
 local M = {}
 
-local errorhandling = function (filename)
-	local errorbuffer = {}
-	return function (err, offset)
-		local message = string.format(
-			"An error occured while generating html for %s at offset %d.\n%s",
-			filename,
-			offset,
-			err
-		)
-		table.insert(errorbuffer, message)
-	end, errorbuffer
-end
-
-function M.test(modelsourcepath, serializedreferencepath)
+function M.test(modelsourcepath, referencepath)
 
 	--
 	-- Load provided model
 	--
-	local luafile, errormessage = io.open(modelsourcepath, 'r')
-	assert(
-		luafile,
-		string.format('Unable to read from %s.\n%s', modelsourcepath, errormessage or '')
-	)
-	local inputstring = luafile:read('*a')
-	luafile:close()
+	local inputstring = testutil.loadfile(modelsourcepath)
 	
 	-- Load model
 	local modelfunction = loadstring(inputstring)
@@ -58,75 +40,23 @@ function M.test(modelsourcepath, serializedreferencepath)
 	local inputhtml = templateengine.applytemplate(inputmodel)
 	
 	-- Create parser for input html
-	local handler = domhandler.createhandler()
-	local xmlparser = xml.newparser(handler)
-	xmlparser.options.stripWS = false
-	local errorhandlingfunction, errormessages = errorhandling(modelsourcepath)
-	xmlparser.options.errorHandler = errorhandlingfunction
+	local htmltable = testutil.parsehtml(inputhtml, "Generated HTML")
+	if not htmltable then
+		return nil, errormessage
+	end
 	
-	-- Actual html parsing
-	local status, pcallerror = pcall( function() 
-		xmlparser:parse(inputhtml)
-	end)
-	assert(#errormessages == 0 and status, string.format("%s\n%s\n%s",table.concat(errormessages), tostring(pcallerror),inputhtml))
-	local htmltable = handler.root
-
 	--
 	-- Load provided reference
 	--
-	local reffile = io.open(serializedreferencepath, 'r')
-	local htmlreference = reffile:read(('*a'))
-	reffile:close()
+	local referencehtml = testutil.loadfile(referencepath)
 	
-	-- Create parser for generated html
-	handler = domhandler.createhandler()
-	xmlparser = xml.newparser(handler)
-	xmlparser.options.stripWS = false
-	errorhandlingfunction, errormessages = errorhandling(modelsourcepath)
-	xmlparser.options.errorHandler = errorhandlingfunction
-	
-	-- Generate html from reference
-	errormessages = {}
-	local status, pcallerror = pcall( function() 
-		xmlparser:parse(htmlreference)
-	end)
-	assert(#errormessages == 0 and status, string.format("%s\n%s\n%s",table.concat(errormessages), tostring(pcallerror),htmlreference))
-	local htmlreferencetable = handler.root
+	-- Parse html from reference
+	local htmlreferencetable = testutil.parsehtml(referencehtml, referencepath)
+	if not htmltable then
+		return nil, errormessage
+	end
 
 	-- Check that they are equivalent
-	local equivalent = tablecompare.compare(htmltable, htmlreferencetable)
-	if #equivalent > 0 then
-	
-		-- Compute which keys differs
-		local differentkeys = tablecompare.diff(htmltable, htmlreferencetable)
-		local differentkeysstring = table.tostring(differentkeys)
-		
-		-- Convert table in formatted string
-		local xmlformatter = require("xmlformatter")
-		local htmlformattedstring= xmlformatter.xmltostring(htmltable)
-		local htmlformattedreferencestring = xmlformatter.xmltostring(htmlreferencetable)
-		
-		-- Create the diff
-		local diffclass = java.require("diff.match.patch.diff_match_patch")
-		local diff = diffclass:new()
-		local differences = diff:diff_main(htmlformattedstring,htmlformattedreferencestring)
-		diff:diff_cleanupSemantic(differences)
-		
-		-- Prettify the result
-		local diffutil = java.require("org.eclipse.koneki.ldt.lua.tests.internal.utils.DiffUtil")
-		local prettydiff = diffutil:diff_pretty_diff(differences)
-		
-		-- Formalise first table output
-		local _ = '_'
-		local line = _:rep(80)
-		local stringdiff = string.format('%s\nString Diff \n%s\n%s', line, line, prettydiff)
-		local generatedhtml   = string.format('%s\nGenerated HTML\n%s\n%s', line, line, inputhtml)
-		local referencehtml  = string.format('%s\nReference HTML\n%s\n%s', line, line, htmlreference)
-		local tablediff = string.format('%s\Table Diff \n%s\n%s', line, line, differentkeysstring)
-		local generatedtable   = string.format('%s\nGenerated table\n%s\n%s', line, line, table.tostring(htmltable, 1))
-		local referencetable  = string.format('%s\nReference table\n%s\n%s', line, line, table.tostring(htmlreferencetable, 1))
-		return nil, string.format('Keys which differ are:\n%s\n%s\n%s\n%s\n%s\n%s',stringdiff, generatedhtml, referencehtml, tablediff, generatedtable, referencetable)
-	end
-	return true
+	return testutil.comparehtml(htmltable,htmlreferencetable, inputhtml,referencehtml)
 end
 return M
