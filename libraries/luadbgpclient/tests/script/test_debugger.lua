@@ -887,6 +887,11 @@ local property_get_cases = {
             property = { _attr = { name='["key"]', type="string", children="0", size="5", encoding="base64" }, [1] = '"val"' }, 
     } } },
     
+    { "var = io.stdin", {
+        _attr = { type="userdata", children="1", numchildren="1", encoding="base64" },
+        property = {
+            _attr = { name="metatable", type="special", children="1", encoding="base64" },
+    } } },
     { "var = function() end", { _attr = { type="function (Lua)", children="0", encoding="base64" } } },
     { "var = next", { _attr = { type="function", children="0", encoding="base64" } } },
 }
@@ -905,7 +910,7 @@ test_property_get = data_oriented_factory(property_get_cases,
 function(script, data, cxt) -- skip() --
     local dbg = debugger:from_script(script.."\n print(var)")
     dbg:command("breakpoint_set", {t="line", f=dbg.uri, n=2})
-    dbg:command("feature_set", {n="max_depth", v=100}) -- to have ALL children
+    dbg:command("feature_set", {n="max_depth", v=2}) -- to have ALL children
     dbg:command("run")
     --TODO BUG ECLIPSE TOOLSLINUX-99 352316 
     resp = dbg:command("property_get", {d=0, n=rawb64(tostring(cxt or 1)..'|(...)["var"]')})

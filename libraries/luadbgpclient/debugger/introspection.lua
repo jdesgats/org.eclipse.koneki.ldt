@@ -32,6 +32,24 @@ local function default_inspector(name, value, parent, fullname)
     return M.property(name, type(value), tostring(value), parent, fullname)
 end
 
+-- Inspects types that can have a metatable (table and userdata). Returns
+--   1) generated property
+--   2) boolean indicating whether a custom inspector has been called (in that case, do not process value any further)
+local function metatable_inspector(name, value, parent, fullname)
+    local mt = getmetatable(value)
+    do
+        local custom = M.inspectors[mt]
+        if custom then return custom(name, value, parent, fullname), true end
+    end
+    
+    local prop = default_inspector(name, value, parent, fullname)
+    if mt and prop then
+        local mtprop = M.inspect("metatable", mt, prop, "metatable["..prop.attr.fullname.."]")
+        if mtprop then mtprop.attr.type = "special" end
+    end
+    return prop, false
+end
+
 M.inspectors.number   = default_inspector
 M.inspectors.string   = default_inspector
 M.inspectors.boolean  = default_inspector
@@ -40,7 +58,7 @@ M.inspectors.userdata = default_inspector
 M.inspectors.thread   = default_inspector
 
 M.inspectors.userdata = function(name, value, parent, fullname)
-    return (M.inspectors[getmetatable(value)] or default_inspector)(name, value, parent, fullname)
+    return (metatable_inspector(name, value, parent, fullname)) -- drop second return value
 end
 
 M.inspectors.string = function(name, value, parent, fullname)
@@ -93,21 +111,8 @@ local function generate_key(name)
 end
 
 M.inspectors.table = function(name, value, parent, fullname)
-    -- check for a custom inspector
-    do
-        local custom = M.inspectors[getmetatable(value)]
-        if custom then return custom(name, value, parent, fullname) end
-    end
-    
-    local prop = M.property(name, "table", tostring(value), parent, fullname)
-    if not prop then return nil end
-    
-    -- metatable should appear at first, so start with it
-    local mt = getmetatable(value)
-    if mt then
-        local mtprop = M.inspect("metatable", mt, prop, "metatable["..prop.attr.fullname.."]")
-        if mtprop then mtprop.attr.type = "special" end
-    end
+    local prop, iscustom = metatable_inspector(name, value, parent, fullname)
+    if not prop or iscustom then return prop end
     
     -- iterate over table values and detect arrays at the same time
     -- next is used to circumvent __pairs metamethod in 5.2
@@ -132,6 +137,7 @@ M.inspectors[MULTIVAL_MT] = function(name, value, parent, fullname)
     else
         -- wrap values inside a multival container
         local prop = M.property(name, "multival", "", parent, fullname)
+        if not prop then return nil end
         for i=1, value.n do
             M.inspect(generate_printable_key(i), value[i], prop, fullname .. "[" .. i .. "]")
         end
