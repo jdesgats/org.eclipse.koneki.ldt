@@ -1079,6 +1079,29 @@ function test_eval() -- skip() --
     dbg:stop()
 end
 
+function test_eval_browsing()
+    local dbg = debugger:from_script[[
+    local myval = { foo = "bar" }
+    myval[1] = true
+    ]]
+    dbg:command("breakpoint_set", {t="line", f=dbg.uri, n=2})
+    dbg:command("run")
+    
+    local resp = dbg:command("eval", nil, "myval")
+    assert_equal('["foo"]', resp.property.property._attr.name)
+    local get = dbg:command("property_get", {d=0, n=resp.property.property._attr.fullname})
+    unb64property(get.property)
+    assert_table_subset({ _attr = { type = "string" }, [1] = '"bar"' }, get.property)
+    
+    -- now try to set property and re-eval it
+    assert_equal("1", dbg:command("property_set", { d=0, n=resp.property.property._attr.fullname }, '"baz"')._attr.success)
+    resp = dbg:command("eval", nil, "myval.foo")
+    unb64property(resp)
+    assert_equal('"baz"', resp.property[1])
+    
+    dbg:stop()
+end
+
 -- test context of another coroutine
 function test_coro_context_and_properties()
     local dbg = debugger:from_script[[
