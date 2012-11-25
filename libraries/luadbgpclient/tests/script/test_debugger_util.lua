@@ -97,6 +97,8 @@ function test_make_property()
         fullname = "0|a.b.str",
         type = "string",
         children = 0,
+        page = 0,
+        pagesize = 32,
         encoding = "base64",
         size = 10,
     }, '"a string"' }, prop)
@@ -105,10 +107,10 @@ function test_make_property()
     local f = coroutine.create(function() end)
     local subtable = setmetatable({ foo = "bar" }, {__tostring=function() return "hello!" end }) -- metatable will be used but not dumped
     local tbl = { "str", 56, f, subtable }
-    prop = introspection.make_property(0, tbl, "tbl", nil, 2, 32, 0)
+    prop = introspection.make_property(0, tbl, "tbl", nil, 2, 32, 0, nil, true)
     assert_table_equal({tag="property", 
         attr={
-            name = '["tbl"]',
+            name = 'tbl',
             fullname = '0|(...)["tbl"]',
             type = "sequence",
             children = 1,
@@ -120,26 +122,26 @@ function test_make_property()
         },
         tostring(tbl), -- unpredictible
         { tag = "property", 
-          attr = { name = '[1]', fullname = '0|(...)["tbl"][1]', type = "string", children = 0, encoding = "base64", size = 5, },
+          attr = { name = '[1]', fullname = '0|(...)["tbl"][1]', type = "string", children = 0, encoding = "base64", size = 5, page = 0, pagesize = 32 },
           '"str"' },
         { tag = "property", 
-          attr = { name = '[2]', fullname = '0|(...)["tbl"][2]', type = "number", children = 0, encoding = "base64", size = 2, },
+          attr = { name = '[2]', fullname = '0|(...)["tbl"][2]', type = "number", children = 0, encoding = "base64", size = 2, page = 0, pagesize = 32 },
           "56" },
         { tag = "property", 
-          attr = { name = '[3]', fullname = '0|(...)["tbl"][3]', type = "thread", children = 0, encoding = "base64", size = #tostring(f), },
+          attr = { name = '[3]', fullname = '0|(...)["tbl"][3]', type = "thread", children = 0, encoding = "base64", size = #tostring(f), page = 0, pagesize = 32 },
           tostring(f) },
         { tag = "property", 
           attr = { name = '[4]', fullname = '0|(...)["tbl"][4]', type = "table", children = 1, numchildren = 2, page = 0, pagesize = 32, encoding = "base64", size = 6, },
           "hello!",
-          { tag = "property", 
-            attr = { name = '["foo"]', fullname = '0|(...)["tbl"][4]["foo"]', type = "string", children = 0, encoding = "base64", size = 5, },
-            '"bar"' },
           { tag = "property",
             attr = { name = 'metatable', fullname = '0|metatable[(...)["tbl"][4]]', type = "special", children = 1, numchildren = 1, page = 0, pagesize = 32, encoding = "base64", size = #tostring(getmetatable(subtable)), },
             
               tostring(getmetatable(subtable)),
               -- child function is not encoded (too deep)
           },
+          { tag = "property", 
+            attr = { name = '["foo"]', fullname = '0|(...)["tbl"][4]["foo"]', type = "string", children = 0, encoding = "base64", size = 5, page = 0, pagesize = 32 },
+            '"bar"' },
         } ,
       }, prop )
 

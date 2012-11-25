@@ -10,10 +10,20 @@
 -------------------------------------------------------------------------------
 -- Runtime inspection unit tests
 
+--require("debugger")("moya.lan", 10000, nil, "core")
+
 require "lunatest"
 require "lunatest_xassert"
 require "debugger" -- make debugger.introspection available in case of one-file build
-local dump_pool = require"debugger.introspection".dump_pool
+require "debugger.platform".init() -- creates platform dependant functions
+--local introspection = require "debugger.introspection"
+local introspection  = assert(loadfile("../debugger/introspection.lua"))()
+local util = require "debugger.util"
+
+-- make base64 encoded strings more readable in error reports
+util.b64 = function(s) return "<base64>"..s.."</base64>" end
+util.rawb64 = util.b64
+util.unb64 = function(s) return s:sub(9, -10) end
 
 module(..., package.seeall)
 
@@ -25,187 +35,180 @@ else
   global_env = function(f) return f end
 end
 
-local pool
-function setup()
-    pool = dump_pool:new(true, true, true, true, true)
-end
-
 -- Test basic type serialization
-function test_basictype()
-    assert_table_equal({ repr = "12", type = "number" }, pool:number(12))
+function test_basictype() -- skip() --
+    assert_table_equal({
+      tag = "property",
+      attr = {
+        children = 0,
+        pagesize = 32,
+        page = 0,
+        type = "number",
+        name = "foo",
+        fullname = util.rawb64('0|(...)["foo"]'),
+        encoding = "base64",
+        size = 2,
+      },
+      util.b64("12")
+    }, introspection.make_property(0, 12, "foo", nil, 1, 32, 0, nil, true))
+    assert_equal('["foo"]', introspection.make_property(0, 12, "foo", nil, 1, 32, 0, nil, false).attr.name, "safe_name does not work as expected")
 end
 
--- Strings are escaped, but length is the raw (unsecaped) length
-function test_string()
-    local dumped = pool:string"a\nb\000c"
-    assert_equal("string", dumped.type)
-    assert_equal(5, dumped.length)
+-- Strings are escaped
+function test_string() -- skip() --
+    local dumped = introspection.make_property(0, "a\nb\000c", "foo", nil, 1, 32, 0, nil, true)
+    assert_equal("string", dumped.attr.type)
     -- %q behaves slightly differently depending on implementation
-    assert_true(dumped.repr == '"a\\nb\\000c"' or dumped.repr == '"a\\nb\\0c"')
+    assert_true(dumped.attr.size == 11       or dumped.attr.size == 9)
+    assert_true(util.unb64(dumped[1]) == '"a\\nb\\000c"' or util.unb64(dumped[1]) == '"a\\nb\\0c"')
 end
 
 -- Simple table test
-function test_table()
-    local root = pool:table{ a = "foo", b = "bar" }
-    local dumped = pool.dump[root]
-    assert_table(dumped)
-    assert_string(dumped.repr) -- result is unpredictible
-    dumped.repr = ""
-    
-    assert_table_equal({ { { repr = '"a"', type = "string", length=1 }, { repr = '"foo"', type = "string", length=3 } },
-                         { { repr = '"b"', type = "string", length=1 }, { repr = '"bar"', type = "string", length=3 } },
-                           length = 0, repr = "", type = "table", array=false }, dumped)
+function test_table() -- skip() --
+  local dumped = introspection.make_property(0, { a = "foo", b = "bar" }, "testtable", nil, 1, 32, 0, nil, true)
+  
+  assert_string(dumped[1], "table string representation expected")
+  assert_table_equal({
+      tag = "property",
+      attr = {
+        children = 1,
+        numchildren = 2,
+        pagesize = 32,
+        page = 0,
+        type = "table",
+        name = "testtable",
+        fullname = util.rawb64('0|(...)["testtable"]'),
+        encoding = "base64",
+        size = #util.unb64(dumped[1]),
+      },
+      dumped[1], -- result is unpredictible
+      {
+        tag = "property",
+        attr = {
+          children = 0,
+          pagesize = 32,
+          page = 0,
+          type = "string",
+          name = '["a"]',
+          fullname = util.rawb64('0|(...)["testtable"]["a"]'),
+          encoding = "base64",
+          size = 5,
+        },
+        util.b64('"foo"')
+      },
+      {
+        tag = "property",
+        attr = {
+          children = 0,
+          pagesize = 32,
+          page = 0,
+          type = "string",
+          name = '["b"]',
+          fullname = util.rawb64('0|(...)["testtable"]["b"]'),
+          encoding = "base64",
+          size = 5,
+        },
+        util.b64('"bar"')
+      }
+    }, dumped)
 end
 
 -- Test table (array, actually) with metatable
-function test_metatable()
+function test_metatable() -- skip() --
     -- this metatable also define a string representation
     local mt = { __tostring = function(t) return string.format("(%d, %d)", unpack(t)) end }
-    local root = pool:table(setmetatable({ 12, 23 }, mt))
-    local dumped = pool.dump[root]
-    assert_table(dumped)
-    assert_number(dumped.metatable)
-    assert_table_equal({ { { repr="1", type="number" }, { repr="12", type="number" } }, 
-                         { { repr="2", type="number" }, { repr="23", type="number" } },
-                         length = 2, repr = "(12, 23)", array=true, type="table", metatable=dumped.metatable }, dumped)
-    -- most of function introspection is unpredictible and is tested by other test cases
-    local dumped_mt = pool.dump[dumped.metatable]
-    assert_table(dumped_mt)
-    assert_table_equal({ repr='"__tostring"', type="string", length=10 }, dumped_mt[1][1])
+    local t = setmetatable({ 12, 23 }, mt)
+    local dumped = introspection.make_property(0, t, "testtable", nil, 2, 32, 0, nil, true)
+
+    assert_equal("(12, 23)", util.unb64(dumped[1]))
+    assert_equal("special", dumped[2].attr.type) -- metatable is set at first
+    assert_equal('0|metatable[(...)["testtable"]]', util.unb64(dumped[2].attr.fullname))
+    assert_table_subset({name='["__tostring"]', type="function (Lua)"}, dumped[2][2].attr)
+    assert_table_subset({attr = {name='[1]', type='number'}, util.b64('12')}, dumped[3])
 end
 
 -- Test nested and recusive tables
-function test_nested_recursive_table()
+function test_nested_recursive_table() -- skip() --
     local t = { nested = {} }
     t.nested.parent = t
-    local root = pool:table(t)
-    local dumped = pool.dump[root]
-    
-    assert_table(dumped)
-    assert_number(dumped[1][2], "id of nested table is not a number")
-    assert_equal(root, pool.dump[dumped[1][2]][1][2], "recursion point verification failed")
+    local dumped = introspection.make_property(0, t, "testtable", nil, 3, 32, 0, nil, true)
+    assert_equal('["nested"]', dumped[2].attr.name)
+    assert_equal('["parent"]', dumped[2][2].attr.name)
+    assert_equal('["nested"]', dumped[2][2][2].attr.name)
+    assert_nil(dumped[2][2][2][2], "recursion has not stopped where it should")
 end
 
 -- Test a basic function with one upvalue
-function test_function()
+function test_function() -- skip() --
     local a = 2
     local f = global_env(function() return a end)
     local finfo = debug.getinfo(f)
-    local dumped = pool["function"](pool, f)
-    assert_number(dumped.upvalues)
-    assert_table_subset( { type="function (Lua)", line_from=finfo.linedefined, line_to=finfo.lastlinedefined, 
-                          upvalues=dumped.upvalues, file=finfo.source:sub(2), kind="Lua" }, dumped )
-    assert_string(dumped.repr) -- unpredictible
-    local ups = pool.dump[dumped.upvalues]
-    assert_table(ups)
-    ups.repr=""
-    assert_table_equal( { { { repr='"a"', type="string", length=1 }, { repr="2", type="number" } },
-                          type="special", repr="" }, ups)
+    local dumped = introspection.make_property(0, f, "testfunc", nil, 3, 32, 0, nil, true)
+
+    local expected_repr = tostring(f)
+    assert_table_equal({
+      children = 0,
+      pagesize = 32,
+      page = 0,
+      type = "function (Lua)",
+      name = "testfunc",
+      fullname = util.rawb64('0|(...)["testfunc"]'),
+      encoding = "base64",
+      size = #util.unb64(dumped[1]),
+    }, dumped.attr)
+    local actual_repr = util.unb64(dumped[1])
+    assert_equal(expected_repr, actual_repr:match("^(.-)\n"))
+    assert_match("^.-\nfile://.-\n%d+$", actual_repr)
 end
 
-function test_function_env()
+function test_function_env() -- skip() --
     if not setfenv then skip() end -- no environements in 5.2
     local f = setfenv(function() return a end, { a=12 })
-    local fdump = pool["function"](pool, f)
-    assert_number(fdump.environment)
-    local dumped = pool.dump[fdump.environment]
-    dumped.repr = ""
-    assert_table_equal( { { { repr='"a"', type="string", length=1 }, { repr="12", type="number" } },
-                          type="table", repr="", length=0, array=false }, dumped)
+    local dumped = introspection.make_property(0, f, "testfunc", nil, 3, 32, 0, nil, true)
+    assert_table_subset({children=1, numchildren=1, type="function (Lua)"}, dumped.attr)
+    assert_table_subset({name="environment", type="special", fullname=util.rawb64('0|environment[(...)["testfunc"]]'), children=1, numchildren=1}, dumped[2].attr)
+    assert_table_subset({name='["a"]', type="number"}, dumped[2][2].attr)
 end
 
 -- Test output for a function defined in C (using rawget, assuming that it has not been redefined)
-function test_cfunction()
-    assert_table_equal({ type="function", repr=tostring(rawget), kind="C" }, pool["function"](pool, rawget))
+function test_cfunction() -- skip() --
+  local dumped = introspection.make_property(0, rawget, "testfunc", nil, 3, 32, 0, nil, true)
+    assert_table_subset({ attr = {type="function"}, util.b64(tostring(rawget)) }, dumped)
 end
 
-function test_thread()
-    local body = global_env(function()
-        for i=1, math.huge do coroutine.yield(i) end
-    end)
-    
-    local bodyinfo = debug.getinfo(body)
-    local thread = coroutine.create(body)
-    assert(coroutine.resume(thread))
-    
-    local dumped = pool:thread(thread)
-    assert_number(dumped.stack)
-    assert_table_equal({ type="thread", status="suspended", stack=dumped.stack, repr=tostring(thread)}, dumped)
-    
-    local stack = pool.dump[dumped.stack]
-    assert_number(stack[1][2].locales)
-    assert_table_subset({ { { repr="1", type="number" }, 
-                           { type="function (Lua)", locales=stack[1][2].locales,
-                             line_from=bodyinfo.linedefined, line_to=bodyinfo.lastlinedefined, line_current=bodyinfo.linedefined+1,
-                             file=bodyinfo.source:sub(2), kind="Lua",
-                             upvalues = stack[1][2].upvalues } }, -- has _ENV on Lua 5.2
-                          type="special", repr="1 levels"}, stack)
-    
-    local locales = pool.dump[stack[1][2].locales]
-    locales.repr=""
-    assert_table_equal({ { { repr='"i"', type="string", length=1}, { repr="1", type="number" } },
-                         type="special", repr=""}, locales)
+function test_pagination() -- skip --
+  local t = { "value 1", "value 2", "value 3", "value 4", "value 5", "value 6", "value 7", "value 8", "value 9", "value 10", }
+  local dumped
+  -- query first page (0)
+  dumped = introspection.make_property(0, t, "testtable", nil, 1, 3, 0, nil, true)
+  assert_equal(4, #dumped) -- [1] is repr, next 3 are children
+  assert_equal('"value 1"', util.unb64(dumped[2][1]))
+  assert_equal('"value 3"', util.unb64(dumped[4][1]))
+  
+  -- query third page (2)
+  dumped = introspection.make_property(0, t, "testtable", nil, 1, 3, 2, nil, true)
+  assert_equal(4, #dumped) -- [1] is repr, next 3 are children
+  assert_equal('"value 7"', util.unb64(dumped[2][1]))
+  assert_equal('"value 9"', util.unb64(dumped[4][1]))
+  
+  -- 4th page is incomplete
+  dumped = introspection.make_property(0, t, "testtable", nil, 1, 3, 3, nil, true)
+  assert_equal(2, #dumped) -- [1] is repr, next is last children
+  assert_equal('"value 10"', util.unb64(dumped[2][1]))
+  
+  -- non existant page
+  dumped = introspection.make_property(0, t, "testtable", nil, 1, 3, 5, nil, true)
+  assert_equal(1, #dumped) -- only repr is responed
 end
 
--- Test that a dump cannot be dumped
-function test_dump_recursion()
-    local subpool = dump_pool:new()
-    subpool:table{1,2,3}
-    local root = pool:table { ok = "abc", ko = subpool }
-    local dumped = pool.dump[root]
-    dumped.repr = ""
-    -- the ko field is not present in result table
-    assert_table_equal({ { { repr = '"ok"', type = "string", length=2 }, { repr = '"abc"', type = "string", length=3 } },
-                           length = 0, repr = "", type = "table", array=false }, dumped)
-end
-
-function test_switches()
-    do -- locales
-        local pool = dump_pool:new(false, true, true, true, true)
-        local dumped
-        (function() local a; dumped = pool["function"](pool, 2) end)()
-        assert_nil(dumped.locales)
-        assert_nil(dumped.ref)
-    end
-    do -- upvalues
-        local pool = dump_pool:new(true, false, true, true, true)
-        local dumped = pool["function"](pool, function() return pool end)
-        assert_nil(dumped.upvalues)
-    end
-    do -- metatble
-        local pool = dump_pool:new(true, true, false, true, true)
-        local root = pool:table(setmetatable({1,2,3}, { a = 12 }))
-        assert_nil(pool.dump[root].metatable)
-    end
-    do -- stack
-        local pool = dump_pool:new(true, true, true, false, true)
-        local thread = coroutine.create(function() for i=1, math.huge do coroutine.yield(i) end end)
-        coroutine.resume(thread)
-        local dumped = pool:thread(thread)
-        assert_nil(dumped.stack)
-    end
-    if setfenv then -- environment (5.1 only)
-        local pool = dump_pool:new(true, true, true, true, false)
-        local dumped = pool["function"](pool, setfenv(function() return a end, { a=12 }))
-        assert_nil(dumped.environment)
-    end
-    do -- reference
-        local pool = dump_pool:new(true, true, true, true, true, true)
-        local func = function() return a end
-        local dumped = pool["function"](pool, func)
-        assert_equal(func, dumped.ref)
-    end
-end
-
-function test_depth_limit()
-    local root = pool:table({{{{1,2,3}}}}, 2)
-    local level0 = pool.dump[root]
-    assert_table(level0)
-    assert_number(level0[1][2])
-    local level1 = pool.dump[level0[1][2]]
-    assert_table(level1)
-    assert_number(level1[1][2])
-    local level2 = pool.dump[level1[1][2]]
-    assert_table(level2)
-    assert_nil(level2[1]) -- no more recursion
+function test_unsafe_name() -- skip() --
+    local dumped
+    
+    dumped = introspection.make_property(0, 1, "foo", nil, 1, 32, 0, nil, false)
+    assert_equal('["foo"]', dumped.attr.name)
+    assert_equal('0|(...)["foo"]', util.unb64(dumped.attr.fullname))
+    
+    dumped = introspection.make_property(0, 1, "foo", 'metatable["foo"]', 1, 32, 0, nil, false)
+    assert_equal('["foo"]', dumped.attr.name)
+    assert_equal('0|metatable["foo"]', util.unb64(dumped.attr.fullname))
 end

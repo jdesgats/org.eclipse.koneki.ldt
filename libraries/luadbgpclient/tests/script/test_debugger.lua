@@ -1047,14 +1047,13 @@ function test_eval() -- skip() --
         local results = select("#", ...)
         unb64property(resp.property)
         assert_equal("1", resp._attr.success, "Not successful")
-        
         if results > 1 then
             assert_table_subset({ type="multival", numchildren=tostring(results) }, resp.property._attr, "Wrong multival root property")
             for i=1, results do
                 assert_table_subset(select(i, ...), resp.property.property[i], "Result #"..tostring(i).." does not match")
             end
         else
-            assert_table_subset(..., resp.property, "Result #"..tostring(i).." does not match")
+            assert_table_subset(..., resp.property, "Result does not match")
         end
     end)()
     
