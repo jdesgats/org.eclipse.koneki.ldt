@@ -25,7 +25,7 @@ M.inspectors = { }
 M.property = coyield
 
 M.inspect = function(name, value, parent, fullname)
-    return M.inspectors[type(value)](name, value, parent, fullname)
+    return (M.inspectors[type(value)] or M.inspectors.default)(name, value, parent, fullname)
 end
 
 local function default_inspector(name, value, parent, fullname)
@@ -56,6 +56,7 @@ M.inspectors.boolean  = default_inspector
 M.inspectors["nil"]   = default_inspector
 M.inspectors.userdata = default_inspector
 M.inspectors.thread   = default_inspector
+M.inspectors.default  = default_inspector -- allows 3rd party inspectors to use the default inspector if needed
 
 M.inspectors.userdata = function(name, value, parent, fullname)
     return (metatable_inspector(name, value, parent, fullname)) -- drop second return value
@@ -187,14 +188,14 @@ end
 M.make_property = function(cxt_id, value, name, fullname, depth, pagesize, page, size_limit, safe_name)
     fullname = fullname or "(...)[" .. generate_key(name) .. "]"
     if not safe_name then name = generate_printable_key(name) end
-    
-    local generator = cocreate(function() return M.inspectors[type(value)](name, value, nil, fullname) end)
+
+    local generator = cocreate(function() return M.inspect(name, value, nil, fullname) end)
     local propstack = { }
     local rootnode
     local catchthis = true
     local nodestoskip = page * pagesize -- nodes to skip at root level to respect pagination
     local fullname_prefix = tostring(cxt_id).."|"
-    
+
     --TODO pagination (donner nil si c'est pas la peine d'aller plus loin, y compris pour depth), metatablses et autres trucs, optimisation (essayer de virer propstack)
     while true do
         local succes, name, datatype, repr, parent, fullname = assert(coresume(generator, catchthis and propstack[#propstack] or nil))
@@ -205,7 +206,7 @@ M.make_property = function(cxt_id, value, name, fullname, depth, pagesize, page,
             propstack[#propstack] = nil
         end
         if costatus(generator) == "dead" then break end
-        
+
         local prop = {
           tag = "property",
           attr = {
