@@ -15,8 +15,8 @@ local debug = require "debug"
 local platform = require "debugger.platform"
 local util = require "debugger.util"
 
-local tostring, type, assert, next, rawget, getmetatable, setmetatable, getfenv, select,         coyield,         cocreate,         costatus,         coresume,       sformat = 
-      tostring, type, assert, next, rawget, getmetatable, setmetatable, getfenv, select, coroutine.yield, coroutine.create, coroutine.status, coroutine.resume, string.format
+local tostring, type, assert, next, rawget, getmetatable, setmetatable, getfenv, select,         coyield,         cocreate,         costatus,         coresume,       sformat,      tconcat =
+      tostring, type, assert, next, rawget, getmetatable, setmetatable, getfenv, select, coroutine.yield, coroutine.create, coroutine.status, coroutine.resume, string.format, table.concat
 
 local MULTIVAL_MT = { __tostring = function() return "" end }
 
@@ -66,14 +66,25 @@ M.inspectors.string = function(name, value, parent, fullname)
     return M.property(name, "string", sformat("%q", value):gsub("\\\n", "\\n"), parent, fullname)
 end
 
--- TODO pour 5.2 tirer le debug (function(a,b, ...))
-local func_repr = tostring
+local function fancy_func_repr(f, info)
+    local args = {}
+    for i=1, info.nparams do
+        args[i] = debug.getlocal(f, i)
+    end
+
+    if info.isvararg then
+        args[#args+1] = "..."
+    end
+
+    return "function(" .. tconcat(args, ", ") .. ")"
+end
 
 M.inspectors["function"] = function(name, value, parent, fullname)
-    local info = debug.getinfo(value, "nSfl")
+    local info = debug.getinfo(value, "nSflu")
     local prop
     if info.what ~= "C" then
-        local repr = func_repr(value)
+        -- try to create a fancy representation if possible
+        local repr = info.nparams and fancy_func_repr(value, info) or tostring(value)
         if info.source:sub(1,1) == "@" then
             repr = repr .. "\n" .. platform.get_uri("@" .. info.source) .. "\n" .. tostring(info.linedefined)
         end

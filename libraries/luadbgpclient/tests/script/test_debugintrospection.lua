@@ -66,7 +66,7 @@ end
 -- Simple table test
 function test_table() -- skip() --
   local dumped = introspection.make_property(0, { a = "foo", b = "bar" }, "testtable", nil, 1, 32, 0, nil, true)
-  
+
   assert_string(dumped[1], "table string representation expected")
   assert_table_equal({
       tag = "property",
@@ -145,7 +145,6 @@ function test_function() -- skip() --
     local finfo = debug.getinfo(f)
     local dumped = introspection.make_property(0, f, "testfunc", nil, 3, 32, 0, nil, true)
 
-    local expected_repr = tostring(f)
     assert_table_equal({
       children = 0,
       pagesize = 32,
@@ -156,24 +155,38 @@ function test_function() -- skip() --
       encoding = "base64",
       size = #util.unb64(dumped[1]),
     }, dumped.attr)
+
     local actual_repr = util.unb64(dumped[1])
-    assert_equal(expected_repr, actual_repr:match("^(.-)\n"))
-    assert_match("^.-\nfile://.-\n%d+$", actual_repr)
+    assert_match("^function.-\nfile://.-\n%d+$", actual_repr)
 end
 
-function test_function_env() -- skip() --
-    if not setfenv then skip() end -- no environements in 5.2
-    local f = setfenv(function() return a end, { a=12 })
-    local dumped = introspection.make_property(0, f, "testfunc", nil, 3, 32, 0, nil, true)
-    assert_table_subset({children=1, numchildren=1, type="function (Lua)"}, dumped.attr)
-    assert_table_subset({name="environment", type="special", fullname=util.rawb64('0|environment[(...)["testfunc"]]'), children=1, numchildren=1}, dumped[2].attr)
-    assert_table_subset({name='["a"]', type="number"}, dumped[2][2].attr)
+if setfenv then  -- Lua 5.2 does not have environments anymore
+    function test_function_env() -- skip() --
+        local f = setfenv(function() return a end, { a=12 })
+        local dumped = introspection.make_property(0, f, "testfunc", nil, 3, 32, 0, nil, true)
+        assert_table_subset({children=1, numchildren=1, type="function (Lua)"}, dumped.attr)
+        assert_table_subset({name="environment", type="special", fullname=util.rawb64('0|environment[(...)["testfunc"]]'), children=1, numchildren=1}, dumped[2].attr)
+        assert_table_subset({name='["a"]', type="number"}, dumped[2][2].attr)
+    end
 end
 
 -- Test output for a function defined in C (using rawget, assuming that it has not been redefined)
 function test_cfunction() -- skip() --
   local dumped = introspection.make_property(0, rawget, "testfunc", nil, 3, 32, 0, nil, true)
     assert_table_subset({ attr = {type="function"}, util.b64(tostring(rawget)) }, dumped)
+end
+
+-- stock Lua 5.1 cannot inspect function arguments
+if _VERSION == "Lua 5.2" or jit then
+    test_function_arguments = data_oriented_factory({
+      { function() end, "function()" },
+      { function(a, b) end, "function(a, b)" },
+      { function(...) end, "function(...)" },
+    },
+    function(f, expected)
+        local dumped = introspection.make_property(0, f, "testfunc", nil, 3, 32, 0, nil, true)
+        assert_equal(expected, util.unb64(dumped[1]):match("(.-)\n"))
+    end)
 end
 
 function test_pagination() -- skip --
@@ -184,18 +197,18 @@ function test_pagination() -- skip --
   assert_equal(4, #dumped) -- [1] is repr, next 3 are children
   assert_equal('"value 1"', util.unb64(dumped[2][1]))
   assert_equal('"value 3"', util.unb64(dumped[4][1]))
-  
+
   -- query third page (2)
   dumped = introspection.make_property(0, t, "testtable", nil, 1, 3, 2, nil, true)
   assert_equal(4, #dumped) -- [1] is repr, next 3 are children
   assert_equal('"value 7"', util.unb64(dumped[2][1]))
   assert_equal('"value 9"', util.unb64(dumped[4][1]))
-  
+
   -- 4th page is incomplete
   dumped = introspection.make_property(0, t, "testtable", nil, 1, 3, 3, nil, true)
   assert_equal(2, #dumped) -- [1] is repr, next is last children
   assert_equal('"value 10"', util.unb64(dumped[2][1]))
-  
+
   -- non existant page
   dumped = introspection.make_property(0, t, "testtable", nil, 1, 3, 5, nil, true)
   assert_equal(1, #dumped) -- only repr is responed
@@ -203,11 +216,11 @@ end
 
 function test_unsafe_name() -- skip() --
     local dumped
-    
+
     dumped = introspection.make_property(0, 1, "foo", nil, 1, 32, 0, nil, false)
     assert_equal('["foo"]', dumped.attr.name)
     assert_equal('0|(...)["foo"]', util.unb64(dumped.attr.fullname))
-    
+
     dumped = introspection.make_property(0, 1, "foo", 'metatable["foo"]', 1, 32, 0, nil, false)
     assert_equal('["foo"]', dumped.attr.name)
     assert_equal('0|metatable["foo"]', util.unb64(dumped.attr.fullname))
