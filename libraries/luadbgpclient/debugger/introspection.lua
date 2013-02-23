@@ -19,10 +19,14 @@ local tostring, type, assert, next, rawget, getmetatable, setmetatable, getfenv,
       tostring, type, assert, next, rawget, getmetatable, setmetatable, getfenv, select, coroutine.yield, coroutine.create, coroutine.status, coroutine.resume, string.format, table.concat
 
 local MULTIVAL_MT = { __tostring = function() return "" end }
+local probes = { }
 
 local M = { }
 M.inspectors = { }
 M.property = coyield
+
+-- user probes (un)registering
+M.add_probe = function(probe) probes[#probes + 1] = probe end
 
 M.inspect = function(name, value, parent, fullname)
     return (M.inspectors[type(value)] or M.inspectors.default)(name, value, parent, fullname)
@@ -38,10 +42,16 @@ end
 local function metatable_inspector(name, value, parent, fullname)
     local mt = getmetatable(value)
     do
+        -- find  by metatable
         local custom = M.inspectors[mt]
         if custom then return custom(name, value, parent, fullname), true end
+        -- or else call probes
+        for i=1, #probes do
+          local prop = probes[i](name, value, parent, fullname)
+          if prop then return prop, true end
+        end
     end
-    
+
     local prop = default_inspector(name, value, parent, fullname)
     if mt and prop then
         local mtprop = M.inspect("metatable", mt, prop, "metatable["..prop.attr.fullname.."]")
