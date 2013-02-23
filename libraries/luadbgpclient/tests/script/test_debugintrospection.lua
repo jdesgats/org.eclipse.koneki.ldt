@@ -16,8 +16,7 @@ require "lunatest"
 require "lunatest_xassert"
 require "debugger" -- make debugger.introspection available in case of one-file build
 require "debugger.platform".init() -- creates platform dependant functions
---local introspection = require "debugger.introspection"
-local introspection  = assert(loadfile("../debugger/introspection.lua"))()
+local introspection = require "debugger.introspection"
 local util = require "debugger.util"
 
 -- make base64 encoded strings more readable in error reports
@@ -224,4 +223,35 @@ function test_unsafe_name() -- skip() --
     dumped = introspection.make_property(0, 1, "foo", 'metatable["foo"]', 1, 32, 0, nil, false)
     assert_equal('["foo"]', dumped.attr.name)
     assert_equal('0|metatable["foo"]', util.unb64(dumped.attr.fullname))
+end
+
+-- test plugins (metatable & probe based)
+function test_mt_plugin() -- skip() --
+    local mt = { }
+    introspection.inspectors[mt] = function(name, value, parent, fullname)
+        return introspection.property(name, "mytype", "my value", parent, fullname)
+    end
+
+    local t = { }
+    introspection.add_probe(function(name, value, parent, fullname)
+        if value == t then
+            return introspection.property(name, "mytable", "found my table", parent, fullname)
+        end
+    end)
+
+    local dumped = introspection.make_property(0, setmetatable({}, mt), "foo", nil, 1, 32, 0, nil, true)
+    assert_equal(0, dumped.attr.children)
+    assert_equal("mytype", dumped.attr.type)
+    assert_equal(8, dumped.attr.size)
+    assert_equal(util.b64("my value"), dumped[1])
+
+    dumped = introspection.make_property(0, t, "foo", nil, 1, 32, 0, nil, true)
+    assert_equal(0, dumped.attr.children)
+    assert_equal("mytable", dumped.attr.type)
+    assert_equal(14, dumped.attr.size)
+    assert_equal(util.b64("found my table"), dumped[1])
+
+    -- re-run some tests with plugins, they should not be affected
+    test_metatable()
+    test_table()
 end
