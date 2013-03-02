@@ -132,6 +132,10 @@ local function generate_key(name)
     end
 end
 
+local function make_fullname(parent, key)
+    return parent .. "[" .. generate_key(key) .. "]"
+end
+
 M.inspectors.table = function(name, value, parent, fullname)
     local prop, iscustom = metatable_inspector(name, value, parent, fullname)
     if not prop or iscustom then return prop end
@@ -140,7 +144,7 @@ M.inspectors.table = function(name, value, parent, fullname)
     -- next is used to circumvent __pairs metamethod in 5.2
     local isarray, i = true, 1
     for k,v in next, value, nil do
-        M.inspect(generate_printable_key(k), v, prop, fullname .. "[" .. generate_key(k) .. "]")
+        M.inspect(generate_printable_key(k), v, prop, make_fullname(fullname, k))
         -- array detection: keys should be accessible by 1..n keys
         isarray = isarray and rawget(value, i) ~= nil
         i = i + 1
@@ -167,14 +171,14 @@ M.inspectors[MULTIVAL_MT] = function(name, value, parent, fullname)
     end
 end
 
--- ----------------------------------------------------------------------------
--- Public API.
--- ----------------------------------------------------------------------------
-
 -- Used to store complex keys (other than string and number) as they cannot be passed in text
 -- For these keys, the resulting expression will not be the key itself but "key_cache[...]"
 -- where key_cache must be mapped to this table to resolve key correctly.
 M.key_cache = setmetatable({ n=0 }, { __mode = "v" })
+
+-- expose key generation facilities for plugins
+M.generate_printable_key = generate_printable_key
+M.make_fullname = make_fullname
 
 -- Used to inspect "multival" or "vararg" values. The typical use is to pack function result(s) in a single
 -- value to inspect. The Multival instances can be passed to make_property as a single value, they will be
