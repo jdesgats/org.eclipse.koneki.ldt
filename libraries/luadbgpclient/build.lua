@@ -54,17 +54,20 @@ function merge(output, root, modules)
     local name, file = unpack(m)
     output:write(MODULE_TMPL:format(name, name, get_file_content(file), name))
   end
-  
+
   -- insert root module
   output:write(MAIN_HEADER, get_file_content(root))
 end
 
+-- optional features
+local features = { }
+for _, f in ipairs(arg) do io.stderr:write("enable ", f, "\n"); features[f] = true end
 
 -- main
-local output = ...
-output = output and io.open(output, "w") or io.stdout
-srcdir = debug.getinfo(1).source:match("@(.+)[/\\]%w+.lua") or "."
-merge(output, srcdir .. "/debugger/init.lua", {
+local output = io.stdout
+local srcdir = debug.getinfo(1).source:match("@(.+)[/\\]%w+.lua") or "."
+
+local source = {
   { "debugger.transport.apr",       srcdir .. "/debugger/transport/apr.lua" },
   { "debugger.transport.luasocket", srcdir .. "/debugger/transport/luasocket.lua" },
   { "debugger.commands",            srcdir .. "/debugger/commands.lua" },
@@ -74,5 +77,11 @@ merge(output, srcdir .. "/debugger/init.lua", {
   { "debugger.platform",            srcdir .. "/debugger/platform.lua" },
   { "debugger.util",                srcdir .. "/debugger/util.lua" },
   { "debugger.url",                 srcdir .. "/debugger/url.lua" },
-})
-if output ~= io.stdout then output:close() end
+}
+
+if features.ffi then
+  table.insert(source, { "debugger.plugins.ffi",         srcdir .. "/debugger/plugins/ffi/init.lua" })
+  table.insert(source, { "debugger.plugins.ffi.reflect", srcdir .. "/debugger/plugins/ffi/reflect.lua"})
+end
+
+merge(output, srcdir .. "/debugger/init.lua", source)
