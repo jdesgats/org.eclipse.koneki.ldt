@@ -175,8 +175,11 @@ function test_cfunction() -- skip() --
     assert_table_subset({ attr = {type="function"}, util.b64(tostring(rawget)) }, dumped)
 end
 
--- stock Lua 5.1 cannot inspect function arguments
-if _VERSION == "Lua 5.2" or jit then
+-- test for function representation allowed by new Lua 5.2 debugging facilities
+-- LuaJIT needs to be compiled with LUAJIT_ENABLE_LUA52COMPAT to allow this too
+-- table.unpack is a new function for Lua 5.2 and is available on JIT only if
+-- 5.2 features are enabled
+if table.unpack then
     test_function_arguments = data_oriented_factory({
       { function() end, "function()" },
       { function(a, b) end, "function(a, b)" },
@@ -255,3 +258,112 @@ function test_mt_plugin() -- skip() --
     test_metatable()
     test_table()
 end
+
+if jit and pcall(require, "debugger.plugins.ffi") then
+    local ffi = require "ffi"
+    local ffiplugin = require "debugger.plugins.ffi"
+
+    -- structs
+    ffi.cdef "struct point { double x, y; }"
+    ffi.cdef "struct rectangle { struct point from, to; }"
+    ffi.cdef "struct bitfield { signed a:4; unsigned b:3; }"
+    local p = ffi.new "struct point"
+    p.x, p.y = 10, 5
+    local r = ffi.new "struct rectangle"
+    r.from.x, r.from.y, r.to.x, r.to.y = 0, 0, 10, 12
+    local bf = ffi.new "struct bitfield"
+    bf.a, bf.b = 2, 3
+    
+    -- arrays
+    local fla = ffi.new "int32_t[4]"
+    local vla = ffi.new("int32_t[?]", 4)
+    fla[0], fla[1], fla[2], fla[3] = 4, 8, 15, 16
+    vla[0], vla[1], vla[2], vla[3] = 4, 8, 15, 16
+    
+    -- values with extra qualifiers
+    local cui32 = ffi.new("const uint32_t", 12)
+    local vfloat = ffi.new("volatile float", 10)
+    
+    -- functions (ANSI C functions are expected exist on target)
+    ffi.cdef "char *strncpy(char *dest, const char *src, size_t n);"
+    ffi.cdef "int printf(const char *format, ...);"
+    ffi.cdef "void free(void *ptr);"
+    -- typedefs are not returned exactly and size_t is architecture dependent
+    local size_t = ffi.abi("64bit") and "uint64_t" or "uint32_t"
+    
+    -- enums
+    ffi.cdef "enum MyEnum { Val01, Val02 }"
+    ffi.cdef "typedef enum { ValAA=12, ValBB=15 } MyAnonymousEnum;"
+    local myenum = ffi.new("enum MyEnum", ffi.C.Val01)
+    local myanon = ffi.new("MyAnonymousEnum", 12)
+    local myenum_unknown = ffi.new("enum MyEnum", 100)
+    
+    -- union
+    ffi.cdef "union MyUnion { enum MyEnum e; int32_t i; };"
+    local myunion = ffi.new("union MyUnion", ffi.C.Val02)
+    
+    -- ptr, ref
+    local ptr = ffi.cast("int32_t *", 10) -- hopefully, introspection lib will not dereference it !
+    local ref = r.to
+    local nullref = ffi.cast("int32_t&", 0)
+    
+    -- type
+    --TODO: reconstruct full definitions for structures ?
+    local fla_t = ffi.typeof("int32_t[4]")
+    local vla_t = ffi.typeof("int32_t[?]")
+
+    -- the first numerical index is the string representation, which is not 
+    -- always relevant (hence the nil value)
+    test_cdata_introspection = data_oriented_factory({
+    ---[[
+      { p, { attr = { type = "struct point", children=1, numchildren=2, fullname = util.b64 '0|(...)["v"]' }, nil,
+        { attr = { name = "x", type = "double", fullname = util.b64 '0|(...)["v"]["x"]' }, util.b64 "10" },
+        { attr = { name = "y", type = "double", fullname = util.b64 '0|(...)["v"]["y"]' }, util.b64  "5"}}},
+      { r, { attr = { type = "struct rectangle", numchildren=2 }, nil,
+        { attr = { type = "struct point", name = "from" }, nil, { util.b64 "0" }, { util.b64 "0" } },
+        { attr = { type = "struct point", name = "to"   }, nil, { util.b64 "10" }, { util.b64 "12" }}}},
+      { bf, { attr = { type = "struct bitfield", numchildren=2 }, nil,
+        { attr = { type = "signed:4",   name = "a" }, util.b64 "2" },
+        { attr = { type = "unsigned:3", name = "b" }, util.b64 "3" }}},
+      { fla, { attr = { type = "int32_t[4]", numchildren=4 }, nil, 
+        { attr = { type = "int32_t", name="[0]" }, util.b64 "4" },
+        { attr = { type = "int32_t", name="[1]" }, util.b64 "8" },
+        { attr = { type = "int32_t", name="[2]" }, util.b64 "15" },
+        { attr = { type = "int32_t", name="[3]" }, util.b64 "16" } }},
+      { vla, { attr = { type = "int32_t[4]", numchildren=4 }, nil, 
+        { attr = { type = "int32_t", name="[0]" }, util.b64 "4" },
+        { attr = { type = "int32_t", name="[1]" }, util.b64 "8" },
+        { attr = { type = "int32_t", name="[2]" }, util.b64 "15" },
+        { attr = { type = "int32_t", name="[3]" }, util.b64 "16" } }},
+      { cui32, { attr = { type = "const uint32_t", children=0 }, util.b64 "12" }},
+      { vfloat, { attr = { type = "volatile float", children=0 }, util.b64 "10" }},
+      { ffi.C.strncpy, { attr = { type = "function (FFI)", children=0 }, 
+                        util.b64("int8_t* strncpy(int8_t* dest, const int8_t* src, "..size_t.." n)") } },
+      { ffi.C.printf,  { attr = { type = "function (FFI)", children=0 }, 
+                        util.b64("int32_t printf(const int8_t* format, ...)") } },
+      { ffi.C.free,    { attr = { type = "function (FFI)", children=0 }, 
+                        util.b64("void free(void* ptr)") } },
+      { myenum, { attr = { type = "enum MyEnum", children=0 }, util.b64("Val01") } },
+      { myanon, { attr = { type = "anonymous enum", children=0 }, util.b64("ValAA") } },
+      { myenum_unknown, { attr = { type = "enum MyEnum", children=0 }, util.b64("100") } },
+      { myunion, { attr = { type = "union MyUnion", children=1, numchildren=2 }, nil, 
+        { attr = { type = "enum MyEnum", name = "e" }, util.b64("Val02") },
+        { attr = { type = "int32_t",     name = "i" }, util.b64("1") }}},
+      { ptr, { attr = { type = "int32_t*", children=0 }, nil } },
+      { ref, { attr = { type = "const struct point&", children=1, numchildren=2 }, nil,
+        { util.b64 "10" }, { util.b64 "12" } } },
+      { ref, { attr = { type = "const struct point&", children=0 } }, true },
+      -- currently this causes a segmentation fault !!!
+      --{ nullref, { attr = { type = "const int32_t&", children=0 } } },
+      { fla_t, { attr = { type = "ctype", children=0 } } },
+      { vla_t, { attr = { type = "ctype", children=0 } } },
+      --]]
+    },
+    function(value, expected, unsafe_ref)
+        ffiplugin.inspect_references = not unsafe_ref
+        local dumped = introspection.make_property(0, value, "v", nil, 4, 32, 0, nil, true)
+        --dump_value(dumped); print(string.rep("-", 80) .. "\n\n")
+        assert_table_subset(expected, dumped)
+    end)
+end
+
