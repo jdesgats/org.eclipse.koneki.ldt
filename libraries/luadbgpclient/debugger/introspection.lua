@@ -1,4 +1,4 @@
--------------------------------------------------------------------------------
+-- ----------------------------------------------------------------------------
 -- Copyright (c) 2011-2012 Sierra Wireless and others.
 -- All rights reserved. This program and the accompanying materials
 -- are made available under the terms of the Eclipse Public License v1.0
@@ -6,10 +6,10 @@
 -- http://www.eclipse.org/legal/epl-v10.html
 --
 -- Contributors:
---     Sierra Wireless - initial API and implementation
--------------------------------------------------------------------------------
+--     Julien Desgats - initial API and implementation
+-- ----------------------------------------------------------------------------
 -- Properties generation. Generate a LOM table with data from introspection.
--------------------------------------------------------------------------------
+-- ----------------------------------------------------------------------------
 
 local debug = require "debug"
 local platform = require "debugger.platform"
@@ -21,16 +21,72 @@ local tostring, type, assert, next, rawget, getmetatable, setmetatable, getfenv,
 local MULTIVAL_MT = { __tostring = function() return "" end }
 local probes = { }
 
+-- ---------- --
+-- Public API --
+-- ---------- --
+
+---
+-- Introspection logic. This module implements Lua objects introspection and
+-- generates a [DBGP](http://xdebug.org/docs-dbgp.php) compatible 
+-- [LOM](http://matthewwild.co.uk/projects/luaexpat/lom.html) data scructure.
+-- @module debugger.introspection
 local M = { }
+
+---
+-- Represent the actual data to send to the debugger.
+-- Full XML specification can be found in [DBGP specification](http://xdebug.org/docs-dbgp.php#properties-variables-and-values).
+-- Modifying properties after their generation is possible (as actual data serialization/sending is delayed)
+-- but should be used with care. The XML structure uses the [LOM](http://matthewwild.co.uk/projects/luaexpat/lom.html)
+-- format, refer to these documents to get more informations about fields.
+-- 
+-- In addition to table fields, it has an array part, `[1]` being the string representation (base64 encoded),
+-- possibly followed by chlid properties (@{#DBGPProperty} themselves)
+-- 
+-- @field #string tag Always "property"
+-- @field #table attr XML attributes, see DBGP specification
+-- @type DBGPProperty
+
+---
+-- Inpectors table, contain all inspector functions.
+-- Keys are either type names (`string`, `number`, ...) or metatables
+-- that have a custom inspector attached.
+-- @field [parent=#debugger.introspection] #table inspectors
 M.inspectors = { }
+
+---
+-- Generate a DBGP property if needed. If data is in data pagination and recursion depth ranges,
+-- and send a property to the debugger, otherwise drop current property.
+-- @param #string name Property name (displayed in IDE)
+-- @param #string typename Type name (displayed in IDE)
+-- @param #string repr Value string representation
+-- @param #DBGPProperty parent Parent property
+-- @param #string fullname Lua expression used to get value back in further calls
+-- @return #table description
+-- @function [parent=#debugger.introspection] property
 M.property = coyield
 
--- user probes (un)registering
+---
+-- Adds a probe that will be called for every unknown table/userdata.
+-- @param #function probe Inspector function to call.
+-- @function [parent=#debugger.introspection] add_probe
 M.add_probe = function(probe) probes[#probes + 1] = probe end
 
+---
+-- Inspects a Lua value by dispatching it to correct inspector. Inspector functions have the same API.
+-- @param #string name Property name (will be displayed by IDE)
+-- @param value Value to inspect
+-- @param #table parent Parent property (LOM table of the )
+-- @param #string fullname Expression used to retrieve `value` for further debugger calls
+-- @return #DBGPProperty The inspected value as returned by @{debugger.introspection#debugger.introspection.property}.
+-- @return #nil If the value has not been inspected
+-- @function [parent=#debugger.introspection] inspect
 M.inspect = function(name, value, parent, fullname)
     return (M.inspectors[type(value)] or M.inspectors.default)(name, value, parent, fullname)
 end
+
+-- ----------------- --
+-- Utility functions --
+-- ----------------- --
 
 local function default_inspector(name, value, parent, fullname)
     return M.property(name, type(value), tostring(value), parent, fullname)
@@ -60,8 +116,67 @@ local function metatable_inspector(name, value, parent, fullname)
     return prop, false
 end
 
+local function fancy_func_repr(f, info)
+    local args = {}
+    for i=1, info.nparams do
+        args[i] = debug.getlocal(f, i)
+    end
+
+    if info.isvararg then
+        args[#args+1] = "..."
+    end
+
+    return "function(" .. tconcat(args, ", ") .. ")"
+end
+
+--- Generate a name siutable for table index syntax
+-- @param name Key name 
+-- @return #string A table index style index
+-- @usage generate_printable_key('foo') => '["foo"]'
+-- @usage generate_printable_key(12)    => '[12]'
+-- @usage generate_printable_key({})    => '[table: 0x12345678]
+-- @function [parent=#debugger.introspection] generate_printable_key
+local function generate_printable_key(name)
+    return "[" .. (type(name) == "string" and sformat("%q", name) or tostring(name)) .. "]"
+end
+M.generate_printable_key = generate_printable_key
+
+-- Used to store complex keys (other than string and number) as they cannot be passed in text
+-- For these keys, the resulting expression will not be the key itself but "key_cache[...]"
+-- where key_cache must be mapped to this table to resolve key correctly.
+M.key_cache = setmetatable({ n=0 }, { __mode = "v" })
+
+local function generate_key(name)
+    local tname = type(name)
+    if tname == "string" then return sformat("%q", name)
+    elseif tname == "number" or tname == "boolean" then return tostring(name)
+    else -- complex key, use key_cache for lookup
+        local i = M.key_cache.n
+        M.key_cache[i] = name
+        M.key_cache.n = i+1
+        return "key_cache["..tostring(i).."]"
+    end
+end
+
+--- Generate a usable fullname for a value.
+-- Based on parent fullname and key value, return a valid Lua expression.
+-- Key can be any value (as anything can act as table key). If it cannot
+-- be serialized (only string, number and boolean can), it will be temporarly
+-- stored in an internal cache to be retrieved later.
+-- @param #string parent Parent fullname
+-- @param key The child key to generate fullname for
+-- @return #string A valid fullname expression
+-- @function [parent=#debugger.introspection] make_fullname
+local function make_fullname(parent, key)
+    return parent .. "[" .. generate_key(key) .. "]"
+end
+M.make_fullname = make_fullname
+
+-- ---------- --
+-- Inspectors --
+-- ---------- --
+
 M.inspectors.number   = default_inspector
-M.inspectors.string   = default_inspector
 M.inspectors.boolean  = default_inspector
 M.inspectors["nil"]   = default_inspector
 M.inspectors.userdata = default_inspector
@@ -75,19 +190,6 @@ end
 M.inspectors.string = function(name, value, parent, fullname)
     -- escape linebreaks as \n and not as \<0x0A> like %q does
     return M.property(name, "string", sformat("%q", value):gsub("\\\n", "\\n"), parent, fullname)
-end
-
-local function fancy_func_repr(f, info)
-    local args = {}
-    for i=1, info.nparams do
-        args[i] = debug.getlocal(f, i)
-    end
-
-    if info.isvararg then
-        args[#args+1] = "..."
-    end
-
-    return "function(" .. tconcat(args, ", ") .. ")"
 end
 
 M.inspectors["function"] = function(name, value, parent, fullname)
@@ -116,25 +218,6 @@ M.inspectors["function"] = function(name, value, parent, fullname)
     return prop
 end
 
-local function generate_printable_key(name)
-    return "[" .. (type(name) == "string" and sformat("%q", name) or tostring(name)) .. "]"
-end
-
-local function generate_key(name)
-    local tname = type(name)
-    if tname == "string" then return sformat("%q", name)
-    elseif tname == "number" or tname == "boolean" then return tostring(name)
-    else -- complex key, use key_cache for lookup
-        local i = M.key_cache.n
-        M.key_cache[i] = name
-        M.key_cache.n = i+1
-        return "key_cache["..tostring(i).."]"
-    end
-end
-
-local function make_fullname(parent, key)
-    return parent .. "[" .. generate_key(key) .. "]"
-end
 
 M.inspectors.table = function(name, value, parent, fullname)
     local prop, iscustom = metatable_inspector(name, value, parent, fullname)
@@ -155,7 +238,6 @@ M.inspectors.table = function(name, value, parent, fullname)
     return prop
 end
 
---TODO: whait fullname should be (as returned properties are read only)
 M.inspectors[MULTIVAL_MT] = function(name, value, parent, fullname)
     if value.n == 1 then
         -- return directly the value as result
@@ -171,14 +253,9 @@ M.inspectors[MULTIVAL_MT] = function(name, value, parent, fullname)
     end
 end
 
--- Used to store complex keys (other than string and number) as they cannot be passed in text
--- For these keys, the resulting expression will not be the key itself but "key_cache[...]"
--- where key_cache must be mapped to this table to resolve key correctly.
-M.key_cache = setmetatable({ n=0 }, { __mode = "v" })
-
--- expose key generation facilities for plugins
-M.generate_printable_key = generate_printable_key
-M.make_fullname = make_fullname
+-- ------------ --
+-- Internal API --
+-- ------------ --
 
 -- Used to inspect "multival" or "vararg" values. The typical use is to pack function result(s) in a single
 -- value to inspect. The Multival instances can be passed to make_property as a single value, they will be
@@ -187,17 +264,18 @@ function M.Multival(...)
     return setmetatable({ n=select("#", ...), ... }, MULTIVAL_MT)
 end
 
---- Makes a property form a name/value pair (and fullname), see DBGp spec 7.11 for details
--- It has a pretty basic handling of complex types (function, table, userdata), relying to Lua Inspector for advanced stuff.
--- @param cxt_id (number) context ID in which this value resides (workaround bug 352316)
--- @param value (any) the value to debug
--- @param name (any) the name associated with value, passed through tostring
--- @param fullname (string) a Lua expression to eval to get that property again (if nil, computed automatically)
--- @param depth (number) the maximum property depth (recursive calls)
--- @param pagesize (number) maximum children to include
--- @param page (number) the page to generate (0 based)
--- @param size_limit (number, optional) if set, the maximum size of the string representation (in bytes)
--- @param safe_name (boolean) if true, does not encode the name as table key
+--- Makes a property form a name/value pair (and fullname). This is an **internal** function, and should not be used by 3rd party inspectors.
+-- @param #number cxt_id Context ID in which this value resides (workaround bug 352316)
+-- @param value The value to debug
+-- @param name The name associated with value, passed through tostring, so it can be anything
+-- @param #string fullname A Lua expression to eval to get that property again (if nil, computed automatically)
+-- @param #number depth The maximum property depth (recursive calls)
+-- @param #number pagesize maximum children to include
+-- @param #number page The page to generate (0 based)
+-- @param #number size_limit Optional, if set, the maximum size of the string representation (in bytes)
+-- @param #boolean safe_name If true, does not encode the name as table key
+-- @return #DBGPProperty root property
+-- @function [parent=#debugger.introspection] make_property
 --TODO BUG ECLIPSE TOOLSLINUX-99 352316 : as a workaround, context is encoded into the fullname property
 M.make_property = function(cxt_id, value, name, fullname, depth, pagesize, page, size_limit, safe_name)
     fullname = fullname or "(...)[" .. generate_key(name) .. "]"
@@ -210,7 +288,6 @@ M.make_property = function(cxt_id, value, name, fullname, depth, pagesize, page,
     local nodestoskip = page * pagesize -- nodes to skip at root level to respect pagination
     local fullname_prefix = tostring(cxt_id).."|"
 
-    --TODO pagination (donner nil si c'est pas la peine d'aller plus loin, y compris pour depth), metatablses et autres trucs, optimisation (essayer de virer propstack)
     while true do
         local succes, name, datatype, repr, parent, fullname = assert(coresume(generator, catchthis and propstack[#propstack] or nil))
         -- finalize and pop all finished properties
