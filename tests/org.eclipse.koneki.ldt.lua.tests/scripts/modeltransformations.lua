@@ -9,7 +9,9 @@
 --     Sierra Wireless - initial API and implementation
 -------------------------------------------------------------------------------
 
-require 'errnode'
+local compiler = require 'metalua.compiler'
+local mlc = compiler.new()
+
 local serializer = require 'serpent'
 local tablecompare         = require 'tablecompare'
 local tabledumpbeautifier  = require 'tabledumpbeautifier'
@@ -33,9 +35,10 @@ function M.codetoserialisedmodel(sourcefilepath, resultextension, transformation
 	luafile:close()
 
 	-- Generate AST
-	local ast, errormessage = getast( luasource )
-	if not ast then
-		return nil, string.format('Unable to generate AST for %s.\n%s', filename, errormessage)
+	local ast = mlc:src_to_ast( luasource )
+	local status, astvalid, errormsg = pcall(compiler.check_ast, ast)
+	if not astvalid then
+		return nil, string.format('Unable to generate AST for %s.\n%s', sourcefilepath, errormsg)
 	end
 	
 	--Generate model
@@ -53,14 +56,13 @@ function M.codetoserialisedmodel(sourcefilepath, resultextension, transformation
 		print(string.format("Unable to prettify serialized code.\n%s", error))
 		beautifulserializedcode = serializedcode
 	end
-	 
 
 	-- Define file name
 	local extreplacement = table.concat({'%1.', resultextension})--string.format('\%1.%s', resultextension)
-	local serializedfilename = sourcefilepath:gsub('([%w%-_/\\]+)%.lua', extreplacement)
+	local serializedfilename = sourcefilepath:gsub('([%w%-_/\\]+)%.lua$', extreplacement)
 
 	-- Save serialized model
-	local serializefile = io.open(serializedfilename, 'w')
+	local serializefile = assert(io.open(serializedfilename, 'w'))
 	serializefile:write( beautifulserializedcode )
 	serializefile:close()
 

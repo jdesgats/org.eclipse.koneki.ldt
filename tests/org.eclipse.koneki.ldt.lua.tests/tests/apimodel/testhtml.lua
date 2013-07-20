@@ -1,5 +1,5 @@
--------------------------------------------------------------------------------
--- Copyright (c) 2012 Sierra Wireless and others.
+--------------------------------------------------------------------------------
+-- Copyright (c) 2012-2013 Sierra Wireless and others.
 -- All rights reserved. This program and the accompanying materials
 -- are made available under the terms of the Eclipse Public License v1.0
 -- which accompanies this distribution, and is available at
@@ -7,13 +7,14 @@
 --
 -- Contributors:
 --     Sierra Wireless - initial API and implementation
--------------------------------------------------------------------------------
-require 'errnode'
+--------------------------------------------------------------------------------
+require 'metalua.package'
 local domhandler      = require 'domhandler'
 local tablecompare    = require 'tablecompare'
 local templateengine  = require 'templateengine'
 local xml = require 'xml'
 local testutil = require 'testutil'
+local testmodelutil = require 'testmodelutil'
 
 --
 -- Loading template engine environment
@@ -34,6 +35,7 @@ function M.test(modelsourcepath, referencepath)
 	-- Load model
 	local modelfunction = loadstring(inputstring)
 	local inputmodel = modelfunction()
+	local inputmodel = testmodelutil.addfunctions(inputmodel)
 
 	-- Generate html
 	local inputhtml = templateengine.applytemplate(inputmodel)
