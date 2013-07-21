@@ -13,7 +13,7 @@ There is two main uses cases:
 
 The provided API tries to be as simple as possible by hiding most debugger <=> IDE
 communication logic such as recursion limit, pagination, ... However it is not
-yes considerated as final and may change without warning.
+yet considerated as final and may change without notice.
 
 # Inspector modules
 The inspectors are module distinct from the debugger and must be registered in
@@ -57,7 +57,7 @@ As you can imagine, this method is munch slower than previous one so do not abus
 this feature by attaching many such probes or making expensive processing on them.
 
 Generic probes are added to debugger with `debugger.introspection.add_probe` 
-function. A typical modult should look like:
+function. A typical module should look like:
 
 ```lua
     local introspection = require "debugger.introspection"
@@ -68,15 +68,15 @@ function. A typical modult should look like:
       return nil -- unknown object
     end
     
-    introspection.inspectors[my_metatable] = my_inspector
+    introspection.add_probe(my_inspector)
 ```
 
 # Inspection logic
-Now we're able to detect the variables to inspect, let's generate our properties.
+Now we're able to detect the values to inspect, let's generate our properties.
 This what inspector functions do.
 
-These functions generate properties that will be sent to IDE (with
-the `debugger.introspection.property` function). They are called with a value to
+These functions generate properties that will be sent to IDE with
+the `debugger.introspection.property` function. They are called with a value to
 inspect and must generate a debugger property for it (and possibly its children
 for complex data structures).
 
@@ -97,13 +97,14 @@ These arguments are:
   
 ## Generating properties
 The main task of the inspector is to call `debugger.introspection.property` to
-generate a propert corresponding to `value`. This function may return:
+generate a property corresponding to `value`. This function will check if the
+value should be sent to IDE, depending on this, it returns:
 
-* The generated property if property have be sent to IDE, in this case you can
-  inspect children properties (if any) and return that property to caller
-* `nil` if value will not be sent to IDE (too deep recursion or not in currently
-  inspected page). In this case, you should not try to inspect children and return
-  a `nil` value immediately.
+* A *Property* object if the property have be sent to IDE, in this case you can
+  inspect children properties (if any) and return that object to caller
+* `nil` if value will not be sent to IDE (too deep recursion for instance).
+  In this case, you should not try to inspect children and return a `nil`
+  value immediately.
 
 The inspector that is used for most primitive types is simply:
 
@@ -114,12 +115,13 @@ The inspector that is used for most primitive types is simply:
 ```
 
 ## Inspecting children properties
-Now let's inspect more complex types. This is done by either by calling 
-`debugger.introspection.property` more than once if you want to fully handle
-children inspection or by calling `debugger.introspection.inspect` to dispatch
-an arbitrary value to appropriate inspector.
+Now let's inspect more complex types with chile properties. This is done by
+either by calling `debugger.introspection.property` more than once if you
+want to fully handle children inspection or by calling
+`debugger.introspection.inspect` to dispatch an arbitrary value to
+appropriate inspector.
 
-As you can imagine, the `parent` of these sub-properties is the value returned
+As you can imagine, the `parent` of these sub-properties is the object returned
 by `debugger.introspection.property`. For `fullname` (the expression used to 
 retrieve the value in future calls), you can use 
 `debugger.introspection.make_fullname` to generate a valid Lua expression
@@ -157,4 +159,5 @@ you will be able to use this feature only if your userdata (or table) implements
 `__index` metamethod correctly.
 
 For setting data, the debugger makes basically `dostring(fullname .. " = " .. newvalue)`
-so, again `__newindex` metamethod must be implemented if you want to modify data.
+in a sandboxed environment so, again `__newindex` metamethod must be implemented if you
+want to modify data.
