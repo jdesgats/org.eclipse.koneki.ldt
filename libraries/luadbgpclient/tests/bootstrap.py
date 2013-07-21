@@ -22,7 +22,7 @@ Environment(j(testroot, "lua51-core"), True) \
     .make(dbgtransport) \
     .finalize("debugger.transport.core")
 
-Environment(j(testroot, "lua52"), True) \
+Environment(j(testroot, "lua52-core"), True) \
     .lua("5.2.1") \
     .make(dbgtransport) \
     .finalize("debugger.transport.core")
@@ -31,3 +31,14 @@ Environment(j(testroot, "lua51-socket"), True) \
     .lua("5.1.5") \
     .install("luasocket") \
     .finalize("debugger.transport.luasocket")
+
+Environment(j(testroot, "luajit2-socket"), True) \
+    .luajit("2.0.2") \
+    .install("https://raw.github.com/diegonehab/luasocket/v3.0-rc1/luasocket-scm-0.rockspec") \
+    .finalize("debugger.transport.luasocket")
+
+Environment(j(testroot, "lua52-socket"), True) \
+    .lua("5.2.2") \
+    .install("https://raw.github.com/diegonehab/luasocket/v3.0-rc1/luasocket-scm-0.rockspec") \
+    .finalize("debugger.transport.luasocket")
+
