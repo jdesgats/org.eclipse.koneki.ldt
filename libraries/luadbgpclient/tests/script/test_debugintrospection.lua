@@ -64,52 +64,63 @@ end
 
 -- Simple table test
 function test_table() -- skip() --
-  local dumped = introspection.make_property(0, { a = "foo", b = "bar" }, "testtable", nil, 1, 32, 0, nil, true)
+  local t = { a = "foo", b = "bar" }
+  local dumped = introspection.make_property(0, t, "testtable", nil, 1, 32, 0, nil, true)
 
   assert_string(dumped[1], "table string representation expected")
-  assert_table_equal({
-      tag = "property",
-      attr = {
-        children = 1,
-        numchildren = 2,
-        pagesize = 32,
-        page = 0,
-        type = "table",
-        name = "testtable",
-        fullname = util.rawb64('0|(...)["testtable"]'),
-        encoding = "base64",
-        size = #util.unb64(dumped[1]),
-      },
-      dumped[1], -- result is unpredictible
-      {
-        tag = "property",
-        attr = {
-          children = 0,
-          pagesize = 32,
-          page = 0,
-          type = "string",
-          name = '["a"]',
-          fullname = util.rawb64('0|(...)["testtable"]["a"]'),
-          encoding = "base64",
-          size = 5,
-        },
-        util.b64('"foo"')
-      },
-      {
-        tag = "property",
-        attr = {
-          children = 0,
-          pagesize = 32,
-          page = 0,
-          type = "string",
-          name = '["b"]',
-          fullname = util.rawb64('0|(...)["testtable"]["b"]'),
-          encoding = "base64",
-          size = 5,
-        },
-        util.b64('"bar"')
-      }
-    }, dumped)
+  -- iteration order is not specified (and is totally unpredictible at least in Lua 5.2)
+  local a = {
+    tag = "property",
+    attr = {
+      children = 0,
+      pagesize = 32,
+      page = 0,
+      type = "string",
+      name = '["a"]',
+      fullname = util.rawb64('0|(...)["testtable"]["a"]'),
+      encoding = "base64",
+      size = 5,
+    },
+    util.b64('"foo"')
+  }
+  local b = {
+    tag = "property",
+    attr = {
+      children = 0,
+      pagesize = 32,
+      page = 0,
+      type = "string",
+      name = '["b"]',
+      fullname = util.rawb64('0|(...)["testtable"]["b"]'),
+      encoding = "base64",
+      size = 5,
+    },
+    util.b64('"bar"')
+  }
+  
+  local expected = {
+    tag = "property",
+    attr = {
+      children = 1,
+      numchildren = 2,
+      pagesize = 32,
+      page = 0,
+      type = "table",
+      name = "testtable",
+      fullname = util.rawb64('0|(...)["testtable"]'),
+      encoding = "base64",
+      size = #util.unb64(dumped[1]),
+    },
+    dumped[1], -- result is unpredictible
+  }
+  
+  if next(t) == "a" then
+      expected[2], expected[3] = a, b
+  else
+      expected[2], expected[3] = b, a
+  end
+  
+  assert_table_equal(expected, dumped)
 end
 
 -- Test table (array, actually) with metatable

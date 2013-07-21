@@ -30,6 +30,8 @@ end
 
 module(..., package.seeall)
 
+--debug.sethook(function(_, l) print(debug.getinfo(2).source, l) end, "l")
+
 LUA_EXECUTABLE = LUA_EXECUTABLE or "lua"
 LUA_OPTS = "" -- additional options for lua executable
 OUTPUT_FILE = "/dev/null" -- used as stdout for debugged program, in particular the should be "nul" for windows
@@ -106,7 +108,7 @@ function debugger:from_file(file, bootstrap)
     }, self)
     -- to be sure to delete the temp file at exit
     dbg.remover = newproxy(true)
-    getmetatable(dbg.remover).__gc = function() assert(os.execute(RM_EXEC:format(file)) == 0) end 
+    getmetatable(dbg.remover).__gc = function() os.execute(RM_EXEC:format(file)) end 
     
     local init = dbg:receive()
     return dbg, init
@@ -183,19 +185,23 @@ end
 -------------------------------------------------------------------------------
 function suite_setup()
     server = assert(transport.create())
-    assert(server:bind("*", DBGP_PORT))
-    assert(server:listen(32))
-    --server:settimeout(SOCKET_TIMEOUT)
     if server.setoption then
         server:setoption('reuseaddr', true) -- force reuse addr for LuaSocket
     end
+    assert(server:bind("*", DBGP_PORT))
+    assert(server:listen(32))
+    --server:settimeout(SOCKET_TIMEOUT)
 end
 
 function suite_teardown()
     server:close()
     server = nil
-    collectgarbage "collect"
 end
+
+--FIXME: server socket implementation  is buggy, as we have very limited control on child process
+--       this cause deadlocks sometimes. find why !
+--       reimplement in posix ?
+function teardown() collectgarbage "collect" end
 
 -------------------------------------------------------------------------------
 --  Basic tests
@@ -1108,7 +1114,7 @@ function test_eval_browsing()
 end
 
 -- test context of another coroutine
-function test_coro_context_and_properties()
+function test_coro_context_and_properties() -- skip() --
     local dbg = debugger:from_script[[
     co = coroutine.create(function()
         local var, var2 = 1, "foo"

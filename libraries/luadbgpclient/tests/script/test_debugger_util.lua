@@ -24,9 +24,10 @@ local introspection = require "debugger.introspection"
 
 platform.init()
 
--- bypass base64 encoding (make tests more simple)
-local identity = function(arg) return arg end
-util.b64, util.rawb64, util.unb64 = identity, identity, identity
+-- make base64 encoded strings more readable in error reports
+util.b64 = function(s) return "<base64>"..s.."</base64>" end
+util.rawb64 = util.b64
+util.unb64 = function(s) return s:sub(9, -10) end
 
 -------------------------------------------------------------------------------
 --  Tests
@@ -47,8 +48,8 @@ function test_cmd_parse()
     assert_equal("arg2", args.b)
     assert_nil(data)
     
-    -- with data (base64 part is bypassed as mime fake use identity functions)
-    cmd, args, data = dbgp.cmd_parse("command -a arg1 -b arg2 -- some data")
+    -- with data
+    cmd, args, data = dbgp.cmd_parse("command -a arg1 -b arg2 -- " .. util.rawb64 "some data")
     assert_equal("command", cmd)
     assert_equal("arg1", args.a)
     assert_equal("arg2", args.b)
@@ -94,14 +95,14 @@ function test_make_property()
     local prop = introspection.make_property(0, "a string", "str", "a.b.str", 0, 32, 0)
     assert_table_equal({tag="property", attr={
         name = '["str"]',
-        fullname = "0|a.b.str",
+        fullname = util.rawb64 "0|a.b.str",
         type = "string",
         children = 0,
         page = 0,
         pagesize = 32,
         encoding = "base64",
         size = 10,
-    }, '"a string"' }, prop)
+    }, util.b64 '"a string"' }, prop)
     
     -- table with children (fully recursive)
     local f = coroutine.create(function() end)
@@ -111,7 +112,7 @@ function test_make_property()
     assert_table_equal({tag="property", 
         attr={
             name = 'tbl',
-            fullname = '0|(...)["tbl"]',
+            fullname = util.rawb64 '0|(...)["tbl"]',
             type = "sequence",
             children = 1,
             numchildren = 4,
@@ -120,28 +121,28 @@ function test_make_property()
             encoding = "base64",
             size = #tostring(tbl),
         },
-        tostring(tbl), -- unpredictible
+        util.b64(tostring(tbl)), -- unpredictible
         { tag = "property", 
-          attr = { name = '[1]', fullname = '0|(...)["tbl"][1]', type = "string", children = 0, encoding = "base64", size = 5, page = 0, pagesize = 32 },
-          '"str"' },
+          attr = { name = '[1]', fullname = util.rawb64 '0|(...)["tbl"][1]', type = "string", children = 0, encoding = "base64", size = 5, page = 0, pagesize = 32 },
+          util.b64 '"str"' },
         { tag = "property", 
-          attr = { name = '[2]', fullname = '0|(...)["tbl"][2]', type = "number", children = 0, encoding = "base64", size = 2, page = 0, pagesize = 32 },
-          "56" },
+          attr = { name = '[2]', fullname = util.rawb64 '0|(...)["tbl"][2]', type = "number", children = 0, encoding = "base64", size = 2, page = 0, pagesize = 32 },
+          util.b64 "56" },
         { tag = "property", 
-          attr = { name = '[3]', fullname = '0|(...)["tbl"][3]', type = "thread", children = 0, encoding = "base64", size = #tostring(f), page = 0, pagesize = 32 },
-          tostring(f) },
+          attr = { name = '[3]', fullname = util.rawb64 '0|(...)["tbl"][3]', type = "thread", children = 0, encoding = "base64", size = #tostring(f), page = 0, pagesize = 32 },
+          util.b64(tostring(f)) },
         { tag = "property", 
-          attr = { name = '[4]', fullname = '0|(...)["tbl"][4]', type = "table", children = 1, numchildren = 2, page = 0, pagesize = 32, encoding = "base64", size = 6, },
-          "hello!",
+          attr = { name = '[4]', fullname = util.rawb64 '0|(...)["tbl"][4]', type = "table", children = 1, numchildren = 2, page = 0, pagesize = 32, encoding = "base64", size = 6, },
+          util.b64 "hello!",
           { tag = "property",
-            attr = { name = 'metatable', fullname = '0|metatable[(...)["tbl"][4]]', type = "special", children = 1, numchildren = 1, page = 0, pagesize = 32, encoding = "base64", size = #tostring(getmetatable(subtable)), },
+            attr = { name = 'metatable', fullname = util.rawb64 '0|metatable[(...)["tbl"][4]]', type = "special", children = 1, numchildren = 1, page = 0, pagesize = 32, encoding = "base64", size = #tostring(getmetatable(subtable)), },
             
-              tostring(getmetatable(subtable)),
+              util.b64(tostring(getmetatable(subtable))),
               -- child function is not encoded (too deep)
           },
           { tag = "property", 
-            attr = { name = '["foo"]', fullname = '0|(...)["tbl"][4]["foo"]', type = "string", children = 0, encoding = "base64", size = 5, page = 0, pagesize = 32 },
-            '"bar"' },
+            attr = { name = '["foo"]', fullname = util.rawb64 '0|(...)["tbl"][4]["foo"]', type = "string", children = 0, encoding = "base64", size = 5, page = 0, pagesize = 32 },
+            util.b64 '"bar"' },
         } ,
       }, prop )
 
