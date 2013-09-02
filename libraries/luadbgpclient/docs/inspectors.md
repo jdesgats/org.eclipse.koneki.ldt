@@ -1,11 +1,11 @@
-This document introduces the concept of curstom inspectors which allows you
+This document introduces the concept of custom inspectors which allows you
 to plug your own logic to decode children properties debugging.
 
 This document is a tutorial, it just introduces concepts and best practices. 
 For details about used functions, see the `debugger.introspection` API 
 documentation.
 
-There is two main uses cases:
+There are two main uses cases:
 
 * Enumerate properties of userdata object (which debugger cannot inspect at all
   out of the box)
@@ -29,9 +29,9 @@ First, we need to know what object we want to inspect. For this, two distinct
 modes are available.
 
 ##Metatable matching
-This mathing mode works by associating an inspector function to a given metatable.
+This matching mode works by associating an inspector function to a given metatable.
 It requires you to know in advance what metatables are expected (for example, 
-all your *Car* ojects shares the same metatable).
+all your *Car* objects share the same metatable).
 
 For this we simply add our inspector function to `debugger.introspection.inspectors`
 table with the metatable as key. Your module should look like:
@@ -46,7 +46,7 @@ table with the metatable as key. Your module should look like:
 ```
 
 ## Generic probe
-Some libraries uses a lot of different metatables or create them on-the-fly. In 
+Some libraries use a lot of different metatables or create them on-the-fly. In
 this situation, it can became tricky to list all possible metatables for a given
 object family.
 
@@ -72,7 +72,7 @@ function. A typical module should look like:
 ```
 
 # Inspection logic
-Now we're able to detect the values to inspect, let's generate our properties.
+Now we're able to detect values to inspect, let's generate our properties.
 This what inspector functions do.
 
 These functions generate properties that will be sent to IDE with
@@ -115,7 +115,7 @@ The inspector that is used for most primitive types is simply:
 ```
 
 ## Inspecting children properties
-Now let's inspect more complex types with chile properties. This is done by
+Now let's inspect more complex types with child properties. This is done by
 either by calling `debugger.introspection.property` more than once if you
 want to fully handle children inspection or by calling
 `debugger.introspection.inspect` to dispatch an arbitrary value to
@@ -125,7 +125,7 @@ As you can imagine, the `parent` of these sub-properties is the object returned
 by `debugger.introspection.property`. For `fullname` (the expression used to 
 retrieve the value in future calls), you can use 
 `debugger.introspection.make_fullname` to generate a valid Lua expression
-However, this method works only if your property can by accessed by index.
+However, this method works only if your property can be accessed by index.
 
 If the value is retrieved by some other way (like calling a `get_my_prop` function)
 there is currently no supported way to handle it, see *Limitations* section).
@@ -154,10 +154,10 @@ representation:
 
 # Limitations
 As we've seen before, the debugger engine is currently unable to use anything
-else than indexation to retrieve values or set values after inspection phase so
+else than indexation to retrieve values or set values after inspection phase, so
 you will be able to use this feature only if your userdata (or table) implements
 `__index` metamethod correctly.
 
 For setting data, the debugger makes basically `dostring(fullname .. " = " .. newvalue)`
-in a sandboxed environment so, again `__newindex` metamethod must be implemented if you
+in a sandboxed environment. So, again, `__newindex` metamethod must be implemented if you
 want to modify data.
